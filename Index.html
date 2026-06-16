@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patente Italiano — Language Trainer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #009246; --red: #CE2B37; --ink: #1A1A18; --ink2: #5A5A54; --ink3: #9A9A90;
+    --surface: #F2F2EE; --border: #E0E0D8; --card: #FFFFFF;
+    --correct: #E8F5E9; --correct-b: #4CAF50; --wrong: #FDECEA; --wrong-b: #E53935;
+    --warn: #FFF8E1; --warn-b: #F9A825; --info: #E3F2FD; --info-b: #1565C0;
+  }
+  html { font-size: 16px; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
+
+  header { background: var(--ink); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 52px; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
+  .logo span { color: var(--green); } .logo em { color: var(--red); font-style: normal; }
+  .hstats { display: flex; gap: 18px; font-size: 12px; color: #888; }
+  .hstats strong { color: #fff; font-weight: 600; }
+
+  nav { background: var(--ink); border-top: 1px solid #2a2a28; display: flex; padding: 0 2rem; }
+  .ntab { padding: 9px 15px; font-size: 13px; color: #666; cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; font-family: 'Inter', sans-serif; transition: color .15s; }
+  .ntab:hover { color: #bbb; } .ntab.active { color: #fff; border-bottom-color: var(--green); }
+
+  main { max-width: 800px; margin: 0 auto; padding: 2rem 1rem 5rem; }
+  .panel { display: none; } .panel.active { display: block; }
+
+  /* MODE GRID */
+  .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 1.25rem; }
+  .mode-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: border-color .15s, transform .1s; }
+  .mode-card:hover { border-color: var(--green); transform: translateY(-1px); }
+  .mode-card.selected { border-color: var(--green); background: #F0FAF4; }
+  .mode-icon { font-size: 26px; margin-bottom: 8px; }
+  .mode-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .mode-desc { font-size: 12px; color: var(--ink2); line-height: 1.4; }
+  .start-btn { display: block; width: 100%; padding: 13px; background: var(--green); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .start-btn:hover { opacity: .9; }
+
+  /* QUIZ */
+  .quiz-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-size: 13px; color: var(--ink2); }
+  .prog-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width .3s; }
+  .qcard { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+  .qbadge { display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; padding: 3px 8px; border-radius: 4px; margin-bottom: .9rem; background: var(--surface); color: var(--ink2); }
+  .qtext { font-family: 'Syne', sans-serif; font-size: 21px; font-weight: 700; line-height: 1.3; margin-bottom: .4rem; }
+  .qsub { font-size: 13px; color: var(--ink2); margin-bottom: 1.25rem; }
+
+  /* HACK CALLOUT inside question */
+  .hack-callout { border-left: 3px solid var(--warn-b); background: var(--warn); border-radius: 0 8px 8px 0; padding: 10px 14px; margin-bottom: 1.25rem; font-size: 13px; line-height: 1.5; color: #5D4037; display: none; }
+  .hack-callout.show { display: block; }
+  .hack-callout strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; color: #8D6E63; }
+
+  .opts { display: flex; flex-direction: column; gap: 9px; }
+  .opt { display: flex; align-items: center; gap: 11px; padding: 13px 15px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 9px; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink); transition: border-color .12s; width: 100%; }
+  .opt:hover:not(:disabled) { border-color: var(--green); background: #F5FBF7; }
+  .opt .ok { width: 26px; height: 26px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; color: var(--ink2); }
+  .opt.correct { background: var(--correct); border-color: var(--correct-b); }
+  .opt.correct .ok { background: var(--correct-b); color: #fff; }
+  .opt.wrong { background: var(--wrong); border-color: var(--wrong-b); }
+  .opt.wrong .ok { background: var(--wrong-b); color: #fff; }
+  .opt:disabled { cursor: default; }
+
+  .tinput { width: 100%; padding: 13px 15px; border: 1.5px solid var(--border); border-radius: 9px; font-size: 15px; font-family: 'Inter', sans-serif; background: var(--surface); color: var(--ink); outline: none; margin-bottom: 10px; }
+  .tinput:focus { border-color: var(--green); background: #fff; }
+  .tinput.ci { border-color: var(--correct-b); background: var(--correct); }
+  .tinput.wi { border-color: var(--wrong-b); background: var(--wrong); }
+  .sub-btn { padding: 11px 22px; background: var(--ink); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; }
+
+  .fb { border-radius: 9px; padding: 13px 15px; margin-top: 12px; font-size: 13px; line-height: 1.5; display: none; }
+  .fb.correct { background: var(--correct); border: 1px solid var(--correct-b); color: #1B5E20; }
+  .fb.wrong { background: var(--wrong); border: 1px solid var(--wrong-b); color: #B71C1C; }
+  .fb.show { display: block; }
+  .fb-lbl { font-weight: 600; margin-bottom: 3px; }
+  .fb-detail { color: var(--ink2); font-size: 12px; margin-top: 5px; }
+  .next-btn { display: none; width: 100%; padding: 12px; margin-top: 12px; background: var(--ink); color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .next-btn.show { display: block; }
+
+  /* RESULTS */
+  .rcard { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 2.5rem; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+  .rscore { font-family: 'Syne', sans-serif; font-size: 60px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .rlabel { font-size: 15px; color: var(--ink2); margin-bottom: 1.75rem; }
+  .rgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.75rem; }
+  .rstat { background: var(--surface); border-radius: 8px; padding: 12px; }
+  .rstat .v { font-size: 22px; font-weight: 700; } .rstat .l { font-size: 11px; color: var(--ink2); margin-top: 2px; }
+  .raction { display: flex; gap: 10px; }
+  .raction button { flex: 1; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-p { background: var(--green); color: #fff; border: none; } .btn-s { background: none; border: 1.5px solid var(--border); color: var(--ink); }
+  .btn-p:hover, .btn-s:hover { opacity: .8; }
+
+  /* FLASHCARDS */
+  .fc-wrap { perspective: 1000px; height: 200px; margin-bottom: 1.25rem; cursor: pointer; }
+  .fc-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .35s ease; }
+  .fc-wrap.flipped .fc-inner { transform: rotateY(180deg); }
+  .fc-f, .fc-b { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.75rem; border: 1px solid var(--border); }
+  .fc-f { background: var(--card); }
+  .fc-b { background: var(--ink); color: #fff; transform: rotateY(180deg); }
+  .fc-word { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; margin-bottom: 6px; }
+  .fc-hint { font-size: 12px; color: var(--ink3); }
+  .fc-bword { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+  .fc-ex { font-size: 12px; color: #999; font-style: italic; text-align: center; line-height: 1.4; }
+  .fc-tap { font-size: 11px; color: var(--ink3); margin-top: 14px; }
+  .fc-nav { display: flex; gap: 10px; justify-content: center; margin-bottom: 1.25rem; }
+  .fc-nav button { padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-knew { background: var(--correct); border: 1px solid var(--correct-b); color: #1B5E20; }
+  .btn-miss { background: var(--wrong); border: 1px solid var(--wrong-b); color: #B71C1C; }
+  .fc-ctr { text-align: center; font-size: 12px; color: var(--ink2); margin-bottom: 1.25rem; }
+
+  /* HACKS PANEL */
+  .hack-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 12px; display: flex; gap: 14px; align-items: flex-start; }
+  .hack-num { width: 30px; height: 30px; background: var(--ink); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .hack-body { flex: 1; }
+  .hack-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .hack-desc { font-size: 13px; color: var(--ink2); line-height: 1.5; margin-bottom: 6px; }
+  .hack-ex { font-size: 12px; background: var(--warn); border-left: 2px solid var(--warn-b); padding: 5px 10px; border-radius: 0 5px 5px 0; color: #5D4037; font-style: italic; }
+  .hack-verdict { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-top: 6px; letter-spacing: .04em; }
+  .verdict-f { background: #FDECEA; color: #B71C1C; }
+  .verdict-v { background: #E8F5E9; color: #1B5E20; }
+  .verdict-both { background: #EDE7F6; color: #4527A0; }
+
+  /* REFERENCE */
+  .ref-section { margin-bottom: 2rem; }
+  .ref-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid var(--green); display: inline-block; }
+  .ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 7px; }
+  .ref-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 13px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; gap: 8px; }
+  .ref-it { font-weight: 600; } .ref-en { color: var(--ink2); text-align: right; font-size: 12px; }
+
+  /* PROGRESS */
+  .prog-ov { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; margin-bottom: 1.75rem; }
+  .pcard { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem; text-align: center; }
+  .pcard .v { font-family: 'Syne', sans-serif; font-size: 34px; font-weight: 800; }
+  .pcard .l { font-size: 11px; color: var(--ink2); margin-top: 2px; }
+  .catbar-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .catrow { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  .catrow:last-child { border-bottom: none; }
+  .catname { font-size: 13px; font-weight: 500; min-width: 130px; }
+  .catbar { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .catfill { height: 100%; background: var(--green); transition: width .5s; }
+  .catpct { font-size: 12px; color: var(--ink2); min-width: 32px; text-align: right; }
+
+  @media (max-width: 600px) {
+    header { padding: 0 1rem; } nav { padding: 0 0.75rem; } main { padding: 1.25rem .75rem 3rem; }
+    .qtext { font-size: 17px; } .rscore { font-size: 44px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">patente<span>.</span><em>it</em> trainer</div>
+  <div class="hstats">
+    <span>streak <strong id="hdr-streak">0</strong>🔥</span>
+    <span>answered <strong id="hdr-total">0</strong></span>
+    <span>accuracy <strong id="hdr-score">—</strong></span>
+  </div>
+</header>
+<nav>
+  <button class="ntab active" onclick="showPanel('home',this)">Practice</button>
+  <button class="ntab" onclick="showPanel('hacks',this)">Exam Hacks</button>
+  <button class="ntab" onclick="showPanel('flash',this)">Flashcards</button>
+  <button class="ntab" onclick="showPanel('ref',this)">Reference</button>
+  <button class="ntab" onclick="showPanel('progress',this)">Progress</button>
+</nav>
+
+<main>
+
+<!-- PRACTICE PANEL -->
+<div id="panel-home" class="panel active">
+  <div id="mode-select">
+    <p style="font-size:13px;color:var(--ink2);margin-bottom:1.1rem;">Choose what to practise:</p>
+    <div class="mode-grid">
+      <div class="mode-card selected" onclick="selMode(this,'signal')">
+        <div class="mode-icon">⚠️</div>
+        <div class="mode-name">Signal words</div>
+        <div class="mode-desc">sempre, mai, vietato, purché — the words that flip answers</div>
+      </div>
+      <div class="mode-card" onclick="selMode(this,'hacks_q')">
+        <div class="mode-icon">🧠</div>
+        <div class="mode-name">Exam hacks</div>
+        <div class="mode-desc">Apply the 10 tricks to real question patterns — highest ROI</div>
+      </div>
+      <div class="mode-card" onclick="selMode(this,'translate')">
+        <div class="mode-icon">🔤</div>
+        <div class="mode-name">Vocabulary</div>
+        <div class="mode-desc">Italian driving term → correct English meaning</div>
+      </div>
+      <div class="mode-card" onclick="selMode(this,'numbers')">
+        <div class="mode-icon">🔢</div>
+        <div class="mode-name">Numbers & limits</div>
+        <div class="mode-desc">Speed limits, alcohol thresholds, points — exact values</div>
+      </div>
+      <div class="mode-card" onclick="selMode(this,'signs')">
+        <div class="mode-icon">🔺</div>
+        <div class="mode-name">Sign shapes</div>
+        <div class="mode-desc">Triangolo, cerchio, quadrato — what each shape/colour means</div>
+      </div>
+      <div class="mode-card" onclick="selMode(this,'sentence')">
+        <div class="mode-icon">📋</div>
+        <div class="mode-name">Full sentences</div>
+        <div class="mode-desc">Read Italian exam phrases, pick the correct interpretation</div>
+      </div>
+    </div>
+    <button class="start-btn" onclick="startQuiz()">Start 10-question session →</button>
+  </div>
+
+  <div id="quiz-area" style="display:none">
+    <div class="quiz-meta">
+      <span id="q-ctr">Question 1 / 10</span>
+      <span id="q-mode-lbl" style="color:var(--green);font-weight:500"></span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="q-prog" style="width:0%"></div></div>
+    <div class="qcard">
+      <div class="qbadge" id="q-badge">—</div>
+      <div class="qtext" id="q-text">—</div>
+      <div class="qsub" id="q-sub"></div>
+      <div class="hack-callout" id="q-hack"></div>
+      <div id="q-opts" class="opts"></div>
+      <div id="q-inp" style="display:none">
+        <input type="text" class="tinput" id="q-tinput" placeholder="Type English translation…" autocomplete="off" autocorrect="off">
+        <button class="sub-btn" onclick="submitText()">Check →</button>
+      </div>
+      <div class="fb" id="q-fb"><div class="fb-lbl" id="fb-lbl"></div><div id="fb-det"></div></div>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+
+  <div id="results-area" style="display:none">
+    <div class="rcard">
+      <div class="rscore" id="r-score">—</div>
+      <div class="rlabel" id="r-lbl">—</div>
+      <div class="rgrid">
+        <div class="rstat"><div class="v" id="r-c">—</div><div class="l">correct</div></div>
+        <div class="rstat"><div class="v" id="r-w">—</div><div class="l">wrong</div></div>
+        <div class="rstat"><div class="v" id="r-str">—</div><div class="l">best streak</div></div>
+      </div>
+      <div class="raction">
+        <button class="btn-p" onclick="startQuiz()">Try again</button>
+        <button class="btn-s" onclick="backToModes()">Change mode</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HACKS PANEL -->
+<div id="panel-hacks" class="panel">
+  <p style="font-size:13px;color:var(--ink2);margin-bottom:1.25rem;">The 10 patterns that let you answer correctly even with limited Italian. Learn these before anything else.</p>
+  <div id="hacks-list"></div>
+</div>
+
+<!-- FLASHCARDS PANEL -->
+<div id="panel-flash" class="panel">
+  <div class="fc-ctr" id="fc-ctr">Card 1 of 40</div>
+  <div class="fc-wrap" id="fc-wrap" onclick="flipCard()">
+    <div class="fc-inner">
+      <div class="fc-f">
+        <div class="fc-word" id="fc-front">sempre</div>
+        <div class="fc-hint">Italian → English</div>
+        <div class="fc-tap">tap to reveal</div>
+      </div>
+      <div class="fc-b">
+        <div class="fc-bword" id="fc-back">always</div>
+        <div class="fc-ex" id="fc-ex"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-nav">
+    <button class="btn-miss" onclick="cardRes(false)">✗ Missed</button>
+    <button class="btn-knew" onclick="cardRes(true)">✓ Knew it</button>
+  </div>
+  <div style="text-align:center;font-size:12px;color:var(--ink2)" id="fc-stats">Knew: 0 | Missed: 0</div>
+</div>
+
+<!-- REFERENCE PANEL -->
+<div id="panel-ref" class="panel">
+  <div class="ref-section"><div class="ref-title">Signal words</div><div class="ref-grid" id="ref-signal"></div></div>
+  <div class="ref-section"><div class="ref-title">Road & traffic</div><div class="ref-grid" id="ref-road"></div></div>
+  <div class="ref-section"><div class="ref-title">Numbers to memorise exactly</div><div class="ref-grid" id="ref-numbers"></div></div>
+  <div class="ref-section"><div class="ref-title">Sign shapes & colours</div><div class="ref-grid" id="ref-signs"></div></div>
+</div>
+
+<!-- PROGRESS PANEL -->
+<div id="panel-progress" class="panel">
+  <div class="prog-ov" id="prog-ov"></div>
+  <div style="font-size:14px;font-weight:500;margin-bottom:10px">Accuracy by category</div>
+  <div class="catbar-wrap" id="cat-bars"></div>
+  <button class="btn-s" style="margin-top:1.25rem;padding:9px 18px;border-radius:8px;font-size:13px;cursor:pointer;font-family:Inter,sans-serif" onclick="resetProg()">Reset progress</button>
+</div>
+
+</main>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────
+
+const HACKS = [
+  {
+    num:1, title:'"Non" + safe thing = FALSO',
+    desc:'When a question says "non è obbligatorio / consentito / necessario" about something that clearly should be required (seatbelts, lights, helmets), the answer is FALSE. The law does require it.',
+    ex:'"Non è obbligatorio usare le cinture di sicurezza" → FALSO',
+    verdict:'f',
+    callout:'⚠️ Hack #1: "Non è obbligatorio/consentito" about a safety rule = almost always FALSO'
+  },
+  {
+    num:2, title:'"Sempre" and "mai" are red flags',
+    desc:'Absolutes (always/never) are usually FALSE in Italian traffic law — there are almost always exceptions. Be very suspicious whenever you see sempre or mai.',
+    ex:'"Si può sempre sorpassare in rettilineo" → FALSO (only when safe and legal)',
+    verdict:'f',
+    callout:'⚠️ Hack #2: "Sempre" or "mai" → probably FALSO. Traffic law has exceptions to almost everything.'
+  },
+  {
+    num:3, title:'Safety promotes = VERO, danger allows = FALSO',
+    desc:'If the statement promotes cautious behaviour (slow down, yield, stop, use lights, keep distance) it is almost always TRUE. If it suggests doing something dangerous or careless, it\'s almost always FALSE.',
+    ex:'"In caso di nebbia bisogna rallentare e aumentare la distanza" → VERO',
+    verdict:'both',
+    callout:'⚠️ Hack #3: Cautious behaviour = VERO. Risky/careless behaviour = FALSO.'
+  },
+  {
+    num:4, title:'"È vietato" statements are usually TRUE',
+    desc:'Questions that state something is prohibited ("è vietato") are almost always TRUE — the law really does prohibit that thing. These are reliable VERO answers.',
+    ex:'"È vietato parcheggiare sulle strisce pedonali" → VERO',
+    verdict:'v',
+    callout:'⚠️ Hack #4: "È vietato…" = usually VERO. The prohibition is real.'
+  },
+  {
+    num:5, title:'"Solo" (only) is almost always a trap',
+    desc:'When a question says a rule applies "solo" (only) in one situation, the rule almost always applies in MORE situations than stated. The restriction "solo X" is usually the false part.',
+    ex:'"Il casco è obbligatorio solo in autostrada" → FALSO (required everywhere on a moto)',
+    verdict:'f',
+    callout:'⚠️ Hack #5: "Solo" (only) = probably a trap. Rules usually apply more broadly than stated.'
+  },
+  {
+    num:6, title:'New drivers (neopatentati): alcohol = zero, speed = reduced',
+    desc:'Any question suggesting neopatentati or under-21s can have any alcohol at all is FALSO. Their limit is 0.0 g/L. Also: 100 km/h on motorways (not 130), 90 km/h on roads (not 110) for 3 years.',
+    ex:'"I neopatentati possono avere un tasso alcolemico di 0.5 g/L" → FALSO',
+    verdict:'f',
+    callout:'⚠️ Hack #6: Neopatentati → alcohol 0.0 g/L, motorway max 100 km/h (not 130).'
+  },
+  {
+    num:7, title:'Pedestrians and cyclists always have priority',
+    desc:'Giving priority to pedestrians at crossings or cyclists going straight = TRUE. Any statement suggesting you can ignore or have priority over them = FALSE.',
+    ex:'"Il conducente deve dare precedenza ai pedoni sulle strisce" → VERO',
+    verdict:'v',
+    callout:'⚠️ Hack #7: Pedestrians at crossings, cyclists going straight → always have priority = VERO.'
+  },
+  {
+    num:8, title:'Sign questions: one sign, many questions',
+    desc:'Multiple questions share ONE sign image. Once you identify what the sign means, you can answer all 6-8 questions about it. Red triangle = warning. Red circle = prohibition. Blue circle = obligation. Blue rectangle = information.',
+    ex:'"Il segnale raffigurato indica un pericolo" (for a red triangle sign) → VERO',
+    verdict:'both',
+    callout:'⚠️ Hack #8: Identify the sign shape/colour first. Red triangle=warning, Red circle=prohibition, Blue circle=obligation.'
+  },
+  {
+    num:9, title:'Motorway (autostrada) = maximum restrictions',
+    desc:'Anything relaxed on a motorway is FALSE. U-turns (inversione di marcia), reversing (retromarcia), stopping on the carriageway, pedestrians walking, animals — all forbidden. Motorways have the strictest rules.',
+    ex:'"In autostrada è consentita l\'inversione di marcia" → FALSO',
+    verdict:'f',
+    callout:'⚠️ Hack #9: Autostrada = maximum restrictions. U-turns, reversing, stopping = always FALSO.'
+  },
+  {
+    num:10, title:'Roundabout: vehicles inside have priority',
+    desc:'Vehicles already IN the rotatoria have right of way over those entering. Any statement saying entering vehicles have priority, or that it\'s equal, is FALSE.',
+    ex:'"Nella rotatoria i veicoli che entrano hanno la precedenza" → FALSO',
+    verdict:'f',
+    callout:'⚠️ Hack #10: Rotatoria → vehicles already inside always have priority. Entering = yield.'
+  }
+];
+
+const VOCAB = {
+  signal: [
+    {it:'sempre',en:'always',ex:'"È sempre vietato…" = it is always forbidden'},
+    {it:'mai',en:'never',ex:'"Non si deve mai…" = one must never'},
+    {it:'vietato / è vietato',en:'forbidden / it is forbidden',ex:'Key prohibition word'},
+    {it:'obbligatorio',en:'mandatory',ex:'"È obbligatorio allacciare le cinture"'},
+    {it:'consentito / permesso',en:'allowed / permitted',ex:'"È consentito procedere"'},
+    {it:'purché',en:'as long as',ex:'"Purché la strada sia libera" = as long as road is clear'},
+    {it:'tranne / eccetto',en:'except / unless',ex:'"Tranne i bus" = except buses'},
+    {it:'solo',en:'only',ex:'"Solo i pedoni" = only pedestrians — often a trap'},
+    {it:'deve',en:'must',ex:'"Il conducente deve" = the driver must'},
+    {it:'può',en:'can / may',ex:'"Si può procedere" = one may proceed'},
+    {it:'non deve',en:'must not',ex:'Strong prohibition in question text'},
+    {it:'non è mai',en:'is never',ex:'Absolute negative — key exam trap'},
+  ],
+  road: [
+    {it:'corsia',en:'lane',ex:'"Corsia di destra" = right lane'},
+    {it:'incrocio',en:'intersection',ex:'Where roads cross'},
+    {it:'rotatoria',en:'roundabout',ex:'Inside vehicles have priority'},
+    {it:'sorpasso',en:'overtaking',ex:'"Vietato il sorpasso" = no overtaking'},
+    {it:'precedenza',en:'right of way',ex:'"Dare la precedenza" = yield'},
+    {it:'distanza di sicurezza',en:'safe following distance',ex:'Must be maintained at all times'},
+    {it:'pedone',en:'pedestrian',ex:'Always has priority at crossings'},
+    {it:'ciclista',en:'cyclist',ex:'Priority when going straight'},
+    {it:'senso unico',en:'one-way',ex:'"Strada a senso unico"'},
+    {it:'autostrada',en:'motorway',ex:'Strictest rules, 130 km/h max'},
+    {it:'centro abitato',en:'built-up area / town',ex:'50 km/h applies here'},
+    {it:'fuori dai centri abitati',en:'outside built-up areas',ex:'90 km/h applies here'},
+    {it:'segnale',en:'sign / signal',ex:'"Il segnale raffigurato" = the sign shown'},
+    {it:'carreggiata',en:'carriageway',ex:'The physical road surface'},
+    {it:'conducente',en:'driver',ex:'Common subject in exam questions'},
+    {it:'spartitraffico',en:'central reservation',ex:'Divides opposing traffic'},
+    {it:'striscia continua',en:'solid line',ex:'Cannot be crossed'},
+    {it:'striscia discontinua',en:'dashed line',ex:'Can be crossed when safe'},
+    {it:'inversione di marcia',en:'U-turn',ex:'Forbidden on motorways'},
+    {it:'retromarcia',en:'reversing',ex:'Forbidden on motorways'},
+  ],
+  numbers: [
+    {it:'50 km/h',en:'Town speed limit (centro abitato)'},
+    {it:'90 km/h',en:'Country road limit (outside towns)'},
+    {it:'100 km/h',en:'Motorway limit for neopatentati / rain'},
+    {it:'110 km/h',en:'Motorway limit in rain (experienced drivers)'},
+    {it:'130 km/h',en:'Motorway limit dry (experienced drivers)'},
+    {it:'0.5 g/L',en:'Blood alcohol limit (3+ years, over 21)'},
+    {it:'0.0 g/L',en:'Blood alcohol limit (neopatentati, under 21, taxi/bus)'},
+    {it:'20 punti',en:'Starting points on Italian licence'},
+    {it:'0 punti',en:'Licence suspended — must retake exam'},
+    {it:'3.5 tonnellate',en:'Category B max vehicle weight'},
+    {it:'8 passeggeri',en:'Max passengers Category B (+ driver)'},
+    {it:'50 metri',en:'Warning triangle distance on normal road'},
+    {it:'100 metri',en:'Warning triangle distance on motorway'},
+    {it:'150 metri',en:'Minimum horn warning distance before hazard'},
+    {it:'5 anni',en:'Licence validity under 50'},
+    {it:'3 anni',en:'Licence validity over 50'},
+  ],
+  signs: [
+    {it:'triangolo rosso (bordo rosso)',en:'Warning / danger sign (pericolo)'},
+    {it:'cerchio rosso',en:'Prohibition sign (divieto)'},
+    {it:'cerchio blu',en:'Obligation sign (obbligo)'},
+    {it:'quadrato / rettangolo blu',en:'Information sign'},
+    {it:'ottagono rosso',en:'STOP — must stop completely'},
+    {it:'triangolo invertito bianco/rosso',en:'Yield / give way (dare precedenza)'},
+    {it:'sfondo giallo',en:'Temporary sign (roadworks, overrides others)'},
+    {it:'freccia bianca su cerchio blu',en:'Compulsory direction (must follow)'},
+  ]
+};
+
+const FLASHCARDS = [
+  ...VOCAB.signal.map(v=>({...v,cat:'Signal words'})),
+  ...VOCAB.road.map(v=>({...v,cat:'Road & traffic'})),
+  ...VOCAB.numbers.map(v=>({...v,cat:'Numbers'})),
+  ...VOCAB.signs.map(v=>({...v,cat:'Signs'})),
+];
+
+const QUESTIONS = {
+  signal:[
+    {q:'What does "sempre" mean?',opts:['always','never','sometimes','usually'],ans:0,ex:'"Sempre" = always. Absolutes like this are often red flags — Hack #2.',hack:1},
+    {q:'What does "mai" mean?',opts:['always','maybe','never','often'],ans:2,ex:'"Mai" = never. Another absolute — Hack #2.',hack:1},
+    {q:'What does "vietato" mean?',opts:['allowed','required','forbidden','optional'],ans:2,ex:'"Vietato" = forbidden. Statements with "è vietato" are usually TRUE — Hack #4.'},
+    {q:'What does "obbligatorio" mean?',opts:['optional','forbidden','recommended','mandatory'],ans:3,ex:'"Obbligatorio" = mandatory. "Non è obbligatorio" for a safety rule = FALSO — Hack #1.'},
+    {q:'What does "consentito" mean?',opts:['forbidden','allowed','required','dangerous'],ans:1,ex:'"Consentito" = allowed/permitted.'},
+    {q:'What does "purché" mean?',opts:['because','therefore','as long as','except'],ans:2,ex:'"Purché" = as long as. Sets a condition — changes the whole meaning of a sentence.'},
+    {q:'What does "solo" signal in an exam question?',opts:['a straightforward fact','it is definitely true','likely a trap — rule applies more broadly','the rule only applies once'],ans:2,ex:'"Solo" (only) = almost always a trap. Rules usually apply more broadly than stated. Hack #5.',hack:4},
+    {q:'What does "tranne" / "eccetto" mean?',opts:['also','only','always','except'],ans:3,ex:'"Tranne/eccetto" = except. Exclusion word — changes who or what is included.'},
+    {q:'"Non è mai vietato" means…',opts:['it is always forbidden','it is never forbidden (= always allowed)','it is sometimes forbidden','it is forbidden by default'],ans:1,ex:'Double negative: non + mai + vietato = "never forbidden" = always allowed. Chain of negatives is an exam trap.'},
+    {q:'"Non è obbligatorio usare le cinture" is…',opts:['TRUE — seatbelts are optional','FALSE — seatbelts are required by law','TRUE — only on short trips','FALSE — only for passengers'],ans:1,ex:'Hack #1: "Non è obbligatorio" + safety rule = FALSO. Seatbelts are always required.',hack:0},
+    {q:'"Si può sempre sorpassare in rettilineo" is…',opts:['TRUE — straight roads are safe','FALSE — overtaking has conditions','TRUE — it\'s always legal there','FALSE — overtaking is always banned'],ans:1,ex:'Hack #2: "Sempre" = red flag. Overtaking is only allowed when it\'s safe and legal — not always.',hack:1},
+    {q:'What does "deve" vs "può" signal?',opts:['"Deve" = may, "può" = must','"Deve" = must (obligation), "può" = can (permission)','"Deve" = forbidden, "può" = required','"Deve" = never, "può" = always'],ans:1,ex:'"Deve" = must (strong obligation). "Può" = can/may (permission only, not obligation).'},
+  ],
+  hacks_q:[
+    {q:'"In autostrada è consentita l\'inversione di marcia." True or false?',opts:['VERO — motorways are wide enough','FALSO — U-turns are forbidden on motorways','VERO — in emergencies only','FALSO — only for trucks'],ans:1,ex:'Hack #9: Motorway = maximum restrictions. U-turns (inversione di marcia) are absolutely forbidden.',hack:8},
+    {q:'"I neopatentati possono avere un tasso alcolemico di 0.5 g/L." True or false?',opts:['VERO — same as all drivers','FALSO — neopatentati must be 0.0 g/L','VERO — only on non-motorway roads','FALSO — only if under 18'],ans:1,ex:'Hack #6: New drivers (neopatentati) and under-21s have a 0.0 g/L alcohol limit. Zero tolerance.',hack:5},
+    {q:'"Nella rotatoria i veicoli che entrano hanno la precedenza." True or false?',opts:['VERO — they approach first','FALSO — vehicles inside have priority','VERO — with a yield sign','FALSO — it depends on speed'],ans:1,ex:'Hack #10: Vehicles already IN the roundabout always have priority. Entering vehicles must yield.',hack:9},
+    {q:'"Il casco è obbligatorio solo in autostrada." True or false?',opts:['VERO — highways are more dangerous','FALSO — helmets are required everywhere on a moto','VERO — towns have lower speeds','FALSO — helmets are optional'],ans:1,ex:'Hack #5: "Solo" = trap. Helmets (casco) are compulsory on all roads for motorcycles, not just motorways.',hack:4},
+    {q:'"Il conducente deve dare precedenza ai pedoni sulle strisce." True or false?',opts:['FALSO — pedestrians must wait','VERO — drivers must yield at crossings','FALSO — only at traffic lights','VERO — only when no car is approaching'],ans:1,ex:'Hack #7: Pedestrians at zebra crossings always have priority. Drivers must always yield.',hack:6},
+    {q:'"In caso di nebbia bisogna rallentare e aumentare la distanza di sicurezza." True or false?',opts:['FALSO — fog lights are enough','VERO — fog requires reduced speed and greater distance','FALSO — normal speed is fine','VERO — only on motorways'],ans:1,ex:'Hack #3: Cautious behaviour (slow down, increase distance) in dangerous conditions = VERO.',hack:2},
+    {q:'A red triangle sign appears. "Il segnale raffigurato indica un obbligo." True or false?',opts:['VERO — red means must','FALSO — red triangle = warning, not obligation','VERO — all red signs are obligations','FALSO — triangles only appear on motorways'],ans:1,ex:'Hack #8: Red triangle = pericolo (warning/danger). Obligation signs are BLUE circles.',hack:7},
+    {q:'"È vietato parcheggiare sulle strisce pedonali." True or false?',opts:['FALSO — briefly is fine','VERO — parking on pedestrian crossings is forbidden','FALSO — only applies at night','VERO — only when busy'],ans:1,ex:'Hack #4: "È vietato" statements are usually TRUE. Parking on pedestrian crossings is always forbidden.',hack:3},
+    {q:'"Non è obbligatorio segnalare prima di sorpassare." True or false?',opts:['VERO — signals are just courtesy','FALSO — signalling before overtaking is required','VERO — only in towns','FALSO — only on motorways'],ans:1,ex:'Hack #1: "Non è obbligatorio" + something that should be required = FALSO. Signalling before overtaking is mandatory.',hack:0},
+    {q:'"Si può sempre sorpassare un veicolo in curva." True or false?',opts:['VERO — if the road is clear','FALSO — overtaking on bends is forbidden','VERO — only on wide roads','FALSO — only at night'],ans:1,ex:'Hack #2: "Sempre" = red flag + Hack #9 principle: overtaking on bends is always forbidden.',hack:1},
+  ],
+  translate:[
+    {q:'corsia',opts:['road','lane','junction','pavement'],ans:1,ex:'"Corsia di destra" = right lane.'},
+    {q:'incrocio',opts:['roundabout','motorway','intersection','road sign'],ans:2,ex:'Crossroads where roads meet.'},
+    {q:'rotatoria',opts:['junction','roundabout','crossing','traffic light'],ans:1,ex:'At a rotatoria, vehicles already inside have right of way — Hack #10.',hack:9},
+    {q:'sorpasso',opts:['parking','u-turn','overtaking','reversing'],ans:2,ex:'"Il sorpasso" = the act of overtaking.'},
+    {q:'precedenza',opts:['speed limit','right of way','road marking','warning sign'],ans:1,ex:'"Dare la precedenza" = to give way.'},
+    {q:'autostrada',opts:['country road','ring road','motorway','slip road'],ans:2,ex:'Motorway. Strictest rules — Hack #9.',hack:8},
+    {q:'centro abitato',opts:['city centre only','built-up area / town','industrial zone','road centre'],ans:1,ex:'50 km/h applies in any centro abitato.'},
+    {q:'pedone',opts:['cyclist','pedestrian','driver','passenger'],ans:1,ex:'Pedestrians always have priority at crossings — Hack #7.',hack:6},
+    {q:'conducente',opts:['passenger','pedestrian','driver','traffic warden'],ans:2,ex:'"Il conducente" = the driver. Very common in questions.'},
+    {q:'inversione di marcia',opts:['overtaking','changing lane','U-turn','reversing'],ans:2,ex:'U-turn. Forbidden on motorways — Hack #9.',hack:8},
+    {q:'retromarcia',opts:['overtaking','neutral gear','reversing','handbrake'],ans:2,ex:'Reversing. Also forbidden on motorways.'},
+    {q:'neopatentato',opts:['experienced driver','truck driver','new driver (< 3 years)','taxi driver'],ans:2,ex:'New driver. Special rules: 0.0 g/L alcohol, 100 km/h motorway — Hack #6.',hack:5},
+  ],
+  numbers:[
+    {q:'Speed limit in a "centro abitato" (town)?',opts:['30 km/h','50 km/h','70 km/h','90 km/h'],ans:1,ex:'50 km/h is the default in all built-up areas unless signed otherwise.'},
+    {q:'Speed limit on a country road?',opts:['70 km/h','80 km/h','90 km/h','110 km/h'],ans:2,ex:'90 km/h outside built-up areas on non-motorway roads.'},
+    {q:'Motorway speed limit in dry conditions (experienced driver)?',opts:['110 km/h','120 km/h','130 km/h','150 km/h'],ans:2,ex:'130 km/h on the autostrada in dry weather for drivers with 3+ years experience.'},
+    {q:'Motorway speed limit for neopatentati?',opts:['90 km/h','100 km/h','110 km/h','130 km/h'],ans:1,ex:'100 km/h on motorways for new drivers (under 3 years). Hack #6.',hack:5},
+    {q:'Maximum blood alcohol for most drivers?',opts:['0.2 g/L','0.5 g/L','0.8 g/L','1.0 g/L'],ans:1,ex:'0.5 g/L for drivers with 3+ years. Zero for neopatentati.'},
+    {q:'Blood alcohol limit for neopatentati / under 21?',opts:['0.0 g/L','0.2 g/L','0.5 g/L','0.8 g/L'],ans:0,ex:'Zero tolerance. Any alcohol = automatic violation. Hack #6.',hack:5},
+    {q:'Starting points on an Italian licence?',opts:['10','15','20','30'],ans:2,ex:'20 punti. Points deducted for violations. Reach 0 = licence suspended.'},
+    {q:'Category B vehicle maximum gross weight?',opts:['2.5 tonnes','3.0 tonnes','3.5 tonnes','4.0 tonnes'],ans:2,ex:'3.5 tonnes. Above this requires Category C.'},
+    {q:'Warning triangle distance on a normal road?',opts:['25 m','50 m','100 m','150 m'],ans:1,ex:'50 metres minimum behind the broken-down vehicle on normal roads.'},
+    {q:'Warning triangle distance on a motorway?',opts:['50 m','75 m','100 m','150 m'],ans:2,ex:'100 metres minimum on the motorway. Much greater danger at high speed.'},
+    {q:'Motorway speed limit in rain (experienced driver)?',opts:['90 km/h','100 km/h','110 km/h','120 km/h'],ans:2,ex:'110 km/h in wet conditions for experienced drivers.'},
+    {q:'Italian licence validity under age 50?',opts:['3 years','5 years','8 years','10 years'],ans:1,ex:'5 years, then renewed. Over 50: 3 years. Over 70: shorter still.'},
+  ],
+  signs:[
+    {q:'A red triangle sign is a…',opts:['prohibition sign','warning / danger sign','obligation sign','information sign'],ans:1,ex:'Red triangle = pericolo (danger/warning). Points upward. Hack #8.',hack:7},
+    {q:'A red circle sign is a…',opts:['warning sign','information sign','obligation sign','prohibition sign'],ans:3,ex:'Red circle = divieto (prohibition). Tells you what NOT to do. Hack #8.',hack:7},
+    {q:'A blue circle sign is a…',opts:['information sign','warning sign','obligation sign','prohibition sign'],ans:2,ex:'Blue circle = obbligo (obligation). Tells you what you MUST do. Hack #8.',hack:7},
+    {q:'A blue rectangle sign is a…',opts:['warning sign','obligation sign','prohibition sign','information sign'],ans:3,ex:'Blue rectangle = information (directions, services, place names). Hack #8.',hack:7},
+    {q:'A red octagon is a…',opts:['yield sign','danger sign','STOP sign','speed limit sign'],ans:2,ex:'STOP: must stop completely and yield to all other traffic.'},
+    {q:'A downward-pointing white triangle with red border is a…',opts:['STOP sign','speed limit','yield / give way sign','no entry'],ans:2,ex:'"Dare la precedenza" = give way. Must yield but do not need to fully stop.'},
+    {q:'A yellow background sign means…',opts:['danger ahead','motorway service','temporary / roadworks','no entry'],ans:2,ex:'Yellow background = temporary. Usually roadworks. Overrides permanent signs.'},
+    {q:'A solid centre line means…',opts:['overtake if safe','cannot cross it','slow down','bus lane'],ans:1,ex:'Striscia continua = cannot be crossed under any circumstances.'},
+    {q:'A dashed centre line means…',opts:['no overtaking ever','can cross when safe','one-way road','pedestrian crossing ahead'],ans:1,ex:'Striscia discontinua = can be crossed when safe to do so.'},
+    {q:'Blue circle with white right arrow means…',opts:['you may turn right','you must turn right','right lane recommended','trucks only'],ans:1,ex:'Blue circle + arrow = compulsory direction. MUST follow it. Hack #8.',hack:7},
+  ],
+  sentence:[
+    {q:'"Il conducente deve dare la precedenza ai pedoni sulle strisce."',opts:['Drivers may ignore pedestrians at crossings','Drivers must yield to pedestrians at crossings','Pedestrians must wait for a gap','Pedestrians only cross when light is green'],ans:1,ex:'deve = must, precedenza = right of way, pedoni = pedestrians, strisce = crossing. Hack #7.',hack:6},
+    {q:'"Il sorpasso è sempre vietato in curva."',opts:['Overtaking on bends is sometimes allowed','Overtaking on bends is always forbidden','Overtaking is allowed on gentle bends','Bends are always dangerous regardless'],ans:1,ex:'sorpasso = overtaking, sempre = always, vietato = forbidden, curva = bend. Hack #2 + real rule.',hack:1},
+    {q:'"In autostrada è vietata l\'inversione di marcia."',opts:['U-turns on motorways are allowed in emergencies','U-turns are forbidden on motorways','U-turns are allowed if slow','U-turns are only banned at night'],ans:1,ex:'autostrada = motorway, vietata = forbidden, inversione di marcia = U-turn. Hack #9.',hack:8},
+    {q:'"I neopatentati non devono consumare alcol prima di guidare."',opts:['New drivers may drink a little','All drivers must not drink','New drivers must not consume alcohol before driving','Alcohol is banned only on motorways'],ans:2,ex:'neopatentati = new drivers, non devono = must not, consumare alcol = consume alcohol. Hack #6.',hack:5},
+    {q:'"Nella rotatoria hanno la precedenza i veicoli già in transito."',opts:['Entering vehicles have priority','Vehicles in the roundabout have priority','All vehicles have equal priority','Largest vehicle has priority'],ans:1,ex:'rotatoria = roundabout, precedenza = priority, già in transito = already inside. Hack #10.',hack:9},
+    {q:'"È obbligatorio allacciare le cinture di sicurezza."',opts:['Seatbelts are recommended','Seatbelts are optional on short trips','It is mandatory to wear seatbelts','Seatbelts are only for rear passengers'],ans:2,ex:'obbligatorio = mandatory, allacciare = to fasten, cinture di sicurezza = seatbelts. Hack #1 context.',hack:0},
+    {q:'"Il tasso alcolemico non deve superare 0,5 g/L per i conducenti esperti."',opts:['Alcohol must not exceed 0.5 g/L for experienced drivers','All drivers have a 0.0 g/L limit','0.5 g/L is the minimum allowed','Alcohol limit only applies at night'],ans:0,ex:'tasso alcolemico = blood alcohol, non deve superare = must not exceed, conducenti esperti = experienced drivers.'},
+    {q:'"Si deve tenere la destra salvo sorpasso."',opts:['Always drive on the right, no exceptions','Keep right except when overtaking','Keep left at all times','Overtaking on the right is allowed'],ans:1,ex:'tenere la destra = keep right, salvo = except, sorpasso = overtaking. Standard Italian road rule.'},
+    {q:'"In caso di nebbia bisogna ridurre la velocità."',opts:['In fog, speed is irrelevant','In fog, you must reduce speed','In fog, use full headlights and maintain speed','Fog only affects visibility, not speed'],ans:1,ex:'nebbia = fog, bisogna = it is necessary, ridurre = reduce, velocità = speed. Hack #3: cautious = VERO.',hack:2},
+    {q:'"Il segnale di pericolo ha forma triangolare con bordo rosso."',opts:['Danger signs are circular with red border','Danger signs are square and red','Danger signs are triangular with a red border','Danger signs are octagonal'],ans:2,ex:'segnale di pericolo = danger sign, forma triangolare = triangular shape, bordo rosso = red border. Hack #8.',hack:7},
+  ]
+};
+
+// ─── STATE ──────────────────────────────────────────────────
+
+function loadSt() {
+  try { return JSON.parse(localStorage.getItem('pat_lng_v2')) || defSt(); } catch { return defSt(); }
+}
+function defSt() {
+  return { total:0, correct:0, streak:0, best:0,
+    by:{ signal:{a:0,c:0}, hacks_q:{a:0,c:0}, translate:{a:0,c:0}, numbers:{a:0,c:0}, signs:{a:0,c:0}, sentence:{a:0,c:0} }
+  };
+}
+function saveSt() { localStorage.setItem('pat_lng_v2', JSON.stringify(ST)); }
+
+let ST = loadSt();
+let quiz = { mode:'signal', qs:[], idx:0, correct:0, streak:0, best:0, answered:false };
+let cards = { deck:[], idx:0, knew:0, missed:0 };
+
+// ─── NAV ────────────────────────────────────────────────────
+
+function showPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  else document.querySelectorAll('.ntab').forEach(t=>{ if(t.textContent.toLowerCase().includes(name.slice(0,4))) t.classList.add('active'); });
+  if(name==='hacks') buildHacks();
+  if(name==='ref') buildRef();
+  if(name==='progress') buildProgress();
+  if(name==='flash') initCards();
+}
+
+// ─── HACKS ──────────────────────────────────────────────────
+
+function buildHacks() {
+  const verdMap = { f:'→ usually FALSO', v:'→ usually VERO', both:'→ context dependent' };
+  const colorMap = { f:'verdict-f', v:'verdict-v', both:'verdict-both' };
+  document.getElementById('hacks-list').innerHTML = HACKS.map(h=>`
+    <div class="hack-card">
+      <div class="hack-num">${h.num}</div>
+      <div class="hack-body">
+        <div class="hack-title">${h.title}</div>
+        <div class="hack-desc">${h.desc}</div>
+        <div class="hack-ex">${h.ex}</div>
+        <span class="hack-verdict ${colorMap[h.verdict]}">${verdMap[h.verdict]}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── QUIZ ────────────────────────────────────────────────────
+
+let currentMode = 'signal';
+function selMode(el, mode) {
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected'); currentMode = mode;
+}
+
+function startQuiz() {
+  const mode = currentMode;
+  const pool = shuf([...QUESTIONS[mode]]).slice(0,10);
+  quiz = { mode, qs:pool, idx:0, correct:0, streak:0, best:0, answered:false };
+  document.getElementById('mode-select').style.display='none';
+  document.getElementById('results-area').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  const labels = {signal:'Signal words',hacks_q:'Exam hacks',translate:'Vocabulary',numbers:'Numbers',signs:'Sign shapes',sentence:'Sentences'};
+  document.getElementById('q-mode-lbl').textContent = labels[mode]||mode;
+  showQ();
+}
+
+function showQ() {
+  const q = quiz.qs[quiz.idx]; quiz.answered=false;
+  const tot = quiz.qs.length;
+  document.getElementById('q-ctr').textContent = `Question ${quiz.idx+1} / ${tot}`;
+  document.getElementById('q-prog').style.width = (quiz.idx/tot*100)+'%';
+  document.getElementById('q-fb').className='fb';
+  document.getElementById('next-btn').className='next-btn';
+  document.getElementById('q-opts').innerHTML='';
+  document.getElementById('q-inp').style.display='none';
+
+  const badges={signal:'Signal word',hacks_q:'Exam hack',translate:'Vocabulary',numbers:'Number / limit',signs:'Sign shape',sentence:'Italian phrase'};
+  document.getElementById('q-badge').textContent=badges[quiz.mode]||'—';
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-sub').textContent=quiz.mode==='sentence'?'What does this phrase mean?':'Choose the correct answer:';
+
+  // hack callout
+  const hc = document.getElementById('q-hack');
+  if(q.hack!==undefined) {
+    hc.className='hack-callout show';
+    hc.innerHTML='<strong>Exam Hack</strong>' + HACKS[q.hack].callout;
+  } else { hc.className='hack-callout'; }
+
+  const opts=document.getElementById('q-opts');
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML=`<span class="ok">${['A','B','C','D'][i]}</span>${opt}`;
+    btn.onclick=()=>checkAns(i,btn);
+    opts.appendChild(btn);
+  });
+}
+
+function checkAns(chosen, btn) {
+  if(quiz.answered) return; quiz.answered=true;
+  const q=quiz.qs[quiz.idx]; const ok=chosen===q.ans;
+  record(ok);
+  document.querySelectorAll('.opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.ans) b.classList.add('correct');
+    else if(i===chosen&&!ok) b.classList.add('wrong');
+  });
+  showFb(ok, q.opts[q.ans], q.ex);
+}
+
+function submitText() {
+  if(quiz.answered) return; quiz.answered=true;
+  const q=quiz.qs[quiz.idx]; const inp=document.getElementById('q-tinput');
+  const val=inp.value.trim().toLowerCase();
+  const ok=val===q.en.toLowerCase()||(q.en.toLowerCase().includes(val)&&val.length>=3);
+  inp.disabled=true; inp.className='tinput '+(ok?'ci':'wi');
+  record(ok);
+  showFb(ok, q.en, ok?'Exact match!': `Answer: "${q.en}"`);
+}
+
+function record(ok) {
+  ST.total++; quiz.qs[quiz.idx]._ok=ok;
+  if(ok){ST.correct++;quiz.correct++;quiz.streak++;ST.streak++;
+    if(quiz.streak>quiz.best)quiz.best=quiz.streak;
+    if(ST.streak>ST.best)ST.best=ST.streak;
+  } else {quiz.streak=0;ST.streak=0;}
+  ST.by[quiz.mode].a++;if(ok)ST.by[quiz.mode].c++;
+  saveSt(); updateHdr();
+}
+
+function showFb(ok, correctAns, ex) {
+  const fb=document.getElementById('q-fb');
+  document.getElementById('fb-lbl').textContent=ok?'✓ Correct!':'✗ Not quite';
+  document.getElementById('fb-det').innerHTML=ok
+    ?`<div style="color:var(--ink2)">${ex||''}</div>`
+    :`<div>Correct answer: <strong>${correctAns}</strong></div><div class="fb-detail">${ex||''}</div>`;
+  fb.className='fb '+(ok?'correct':'wrong')+' show';
+  document.getElementById('next-btn').className='next-btn show';
+}
+
+function nextQ() {
+  quiz.idx++;
+  if(quiz.idx>=quiz.qs.length) showResults(); else showQ();
+}
+
+function showResults() {
+  document.getElementById('quiz-area').style.display='none';
+  document.getElementById('results-area').style.display='block';
+  const pct=Math.round(quiz.correct/quiz.qs.length*100);
+  document.getElementById('r-score').textContent=pct+'%';
+  document.getElementById('r-score').style.color=pct>=90?'var(--green)':pct>=70?'#E65100':'var(--red)';
+  document.getElementById('r-lbl').textContent=pct>=90?'Excellent — exam ready on this topic!':pct>=70?'Good progress — keep drilling':'Keep going — review the hacks and try again';
+  document.getElementById('r-c').textContent=quiz.correct;
+  document.getElementById('r-w').textContent=quiz.qs.length-quiz.correct;
+  document.getElementById('r-str').textContent=quiz.best;
+}
+
+function backToModes() {
+  document.getElementById('results-area').style.display='none';
+  document.getElementById('mode-select').style.display='block';
+}
+
+// ─── FLASHCARDS ──────────────────────────────────────────────
+
+function initCards() {
+  cards={deck:shuf([...FLASHCARDS]),idx:0,knew:0,missed:0};
+  document.getElementById('fc-wrap').classList.remove('flipped');
+  showCard();
+}
+
+function showCard() {
+  if(cards.idx>=cards.deck.length){ cards.idx=0; cards.deck=shuf([...FLASHCARDS]); }
+  const c=cards.deck[cards.idx];
+  document.getElementById('fc-wrap').classList.remove('flipped');
+  document.getElementById('fc-front').textContent=c.it;
+  document.getElementById('fc-back').textContent=c.en;
+  document.getElementById('fc-ex').textContent=c.ex||c.cat||'';
+  document.getElementById('fc-ctr').textContent=`Card ${cards.idx+1} of ${cards.deck.length}`;
+  document.getElementById('fc-stats').textContent=`Knew: ${cards.knew}  |  Missed: ${cards.missed}`;
+}
+
+function flipCard() { document.getElementById('fc-wrap').classList.toggle('flipped'); }
+
+function cardRes(knew) {
+  if(!document.getElementById('fc-wrap').classList.contains('flipped')){ flipCard(); return; }
+  if(knew) cards.knew++; else cards.missed++;
+  cards.idx++; showCard();
+}
+
+// ─── REFERENCE ───────────────────────────────────────────────
+
+function buildRef() {
+  const render=(id,items)=>{
+    document.getElementById(id).innerHTML=items.map(v=>`
+      <div class="ref-item"><span class="ref-it">${v.it}</span><span class="ref-en">${v.en}</span></div>
+    `).join('');
+  };
+  render('ref-signal',VOCAB.signal);
+  render('ref-road',VOCAB.road);
+  render('ref-numbers',VOCAB.numbers.map(v=>({it:v.it,en:v.en})));
+  render('ref-signs',VOCAB.signs.map(v=>({it:v.it,en:v.en})));
+}
+
+// ─── PROGRESS ────────────────────────────────────────────────
+
+function buildProgress() {
+  const pct=ST.total?Math.round(ST.correct/ST.total*100):0;
+  document.getElementById('prog-ov').innerHTML=`
+    <div class="pcard"><div class="v">${ST.total}</div><div class="l">questions answered</div></div>
+    <div class="pcard"><div class="v" style="color:var(--green)">${pct}%</div><div class="l">overall accuracy</div></div>
+    <div class="pcard"><div class="v">${ST.best}</div><div class="l">best streak</div></div>
+  `;
+  const cats=[
+    {k:'signal',l:'Signal words'},{k:'hacks_q',l:'Exam hacks'},{k:'translate',l:'Vocabulary'},
+    {k:'numbers',l:'Numbers'},{k:'signs',l:'Sign shapes'},{k:'sentence',l:'Sentences'}
+  ];
+  document.getElementById('cat-bars').innerHTML=cats.map(c=>{
+    const d=ST.by[c.k]; const p=d.a?Math.round(d.c/d.a*100):0;
+    return `<div class="catrow"><div class="catname">${c.l}</div><div class="catbar"><div class="catfill" style="width:${p}%"></div></div><div class="catpct">${d.a?p+'%':'—'}</div></div>`;
+  }).join('');
+}
+
+function resetProg() {
+  if(confirm('Reset all progress?')){ localStorage.removeItem('pat_lng_v2'); ST=defSt(); updateHdr(); buildProgress(); }
+}
+
+// ─── HEADER ──────────────────────────────────────────────────
+
+function updateHdr() {
+  document.getElementById('hdr-streak').textContent=ST.streak;
+  document.getElementById('hdr-total').textContent=ST.total;
+  document.getElementById('hdr-score').textContent=ST.total?Math.round(ST.correct/ST.total*100)+'%':'—';
+}
+
+// ─── UTILS ───────────────────────────────────────────────────
+
+function shuf(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+
+updateHdr();
+</script>
+</body>
+</html>
