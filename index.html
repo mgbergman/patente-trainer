@@ -2,648 +2,839 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Patente Italiano — Language Trainer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Patente Parole — Learn the words that pass the exam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --green:#009246; --red:#CE2B37; --ink:#1A1A18; --ink2:#5A5A54; --ink3:#9A9A90;
-    --surface:#F2F2EE; --border:#E0E0D8; --card:#FFF;
-    --correct:#E8F5E9; --correct-b:#4CAF50; --wrong:#FDECEA; --wrong-b:#E53935;
-    --warn:#FFF8E1; --warn-b:#F9A825;
-  }
-  html { font-size:16px; }
-  body { font-family:'Inter',system-ui,sans-serif; background:var(--surface); color:var(--ink); min-height:100vh; }
-  header { background:var(--ink); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:52px; position:sticky; top:0; z-index:100; }
-  .logo { font-family:'Syne',sans-serif; font-size:17px; font-weight:800; color:#fff; }
-  .logo span{color:var(--green)} .logo em{color:var(--red);font-style:normal}
-  .hstats { display:flex; gap:18px; font-size:12px; color:#888; }
-  .hstats strong { color:#fff; font-weight:600; }
-  nav { background:var(--ink); border-top:1px solid #2a2a28; display:flex; padding:0 2rem; overflow-x:auto; }
-  .ntab { padding:9px 14px; font-size:13px; color:#666; cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; font-family:'Inter',sans-serif; white-space:nowrap; }
-  .ntab:hover{color:#bbb} .ntab.active{color:#fff;border-bottom-color:var(--green)}
-  main { max-width:800px; margin:0 auto; padding:2rem 1rem 5rem; }
-  .panel{display:none} .panel.active{display:block}
-  .mode-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; margin-bottom:1.25rem; }
-  .mode-card { background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:1.25rem; cursor:pointer; transition:border-color .15s; }
-  .mode-card:hover{border-color:var(--green)} .mode-card.selected{border-color:var(--green);background:#F0FAF4}
-  .mode-icon{font-size:26px;margin-bottom:8px} .mode-name{font-size:14px;font-weight:600;margin-bottom:3px}
-  .mode-desc{font-size:12px;color:var(--ink2);line-height:1.4}
-  .mode-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:#E8F5E9;color:#1B5E20;margin-bottom:6px}
-  .start-btn { display:block; width:100%; padding:13px; background:var(--green); color:#fff; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
-  .start-btn:hover{opacity:.9}
-  .quiz-meta{display:flex;justify-content:space-between;margin-bottom:1rem;font-size:13px;color:var(--ink2)}
-  .prog-bar{height:4px;background:var(--border);border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
-  .prog-fill{height:100%;background:var(--green);transition:width .3s}
-  .qcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:2rem;box-shadow:0 2px 10px rgba(0,0,0,.06)}
-  .qbadge{display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:3px 8px;border-radius:4px;margin-bottom:.9rem;background:var(--surface);color:var(--ink2)}
-  .qid{font-size:10px;color:var(--ink3);float:right;margin-top:5px}
-  .qtext{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;line-height:1.35;margin-bottom:.4rem}
-  .qtext .hl-danger{background:#FDECEA;color:#B71C1C;padding:0 3px;border-radius:3px}
-  .qtext .hl-cond{background:#E8F5E9;color:#1B5E20;padding:0 3px;border-radius:3px}
-  .qsub{font-size:13px;color:var(--ink2);margin-bottom:1.25rem}
-  .opts{display:flex;flex-direction:column;gap:9px}
-  .opts.vf{flex-direction:row}
-  .opt{display:flex;align-items:center;justify-content:flex-start;gap:11px;padding:13px 15px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;cursor:pointer;text-align:left;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);transition:border-color .12s;width:100%}
-  .opts.vf .opt{justify-content:center;font-weight:600;font-size:16px}
-  .opt:hover:not(:disabled){border-color:var(--green);background:#F5FBF7}
-  .opt .ok{width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;color:var(--ink2)}
-  .opt.correct{background:var(--correct);border-color:var(--correct-b)}
-  .opt.correct .ok{background:var(--correct-b);color:#fff}
-  .opt.wrong{background:var(--wrong);border-color:var(--wrong-b)}
-  .opt.wrong .ok{background:var(--wrong-b);color:#fff}
-  .opt:disabled{cursor:default}
-  .en-reveal{font-size:13px;color:var(--ink2);background:var(--surface);border-radius:8px;padding:10px 13px;margin-top:12px;display:none;font-style:italic}
-  .en-reveal.show{display:block}
-  .en-btn{background:none;border:1px dashed var(--border);color:var(--ink3);font-size:12px;padding:6px 12px;border-radius:6px;cursor:pointer;margin-top:12px;font-family:'Inter',sans-serif}
-  .en-btn:hover{color:var(--ink2);border-color:var(--ink3)}
-  .fb{border-radius:9px;padding:13px 15px;margin-top:12px;font-size:13px;line-height:1.5;display:none}
-  .fb.correct{background:var(--correct);border:1px solid var(--correct-b);color:#1B5E20}
-  .fb.wrong{background:var(--wrong);border:1px solid var(--wrong-b);color:#B71C1C}
-  .fb.show{display:block}
-  .fb-lbl{font-weight:600;margin-bottom:3px}
-  .fb-detail{color:var(--ink2);font-size:12px;margin-top:5px}
-  .next-btn{display:none;width:100%;padding:12px;margin-top:12px;background:var(--ink);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif}
-  .next-btn.show{display:block}
-  .rcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:2.5rem;text-align:center}
-  .rscore{font-family:'Syne',sans-serif;font-size:60px;font-weight:800;line-height:1;margin-bottom:4px}
-  .rlabel{font-size:15px;color:var(--ink2);margin-bottom:1.75rem}
-  .rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.75rem}
-  .rstat{background:var(--surface);border-radius:8px;padding:12px}
-  .rstat .v{font-size:22px;font-weight:700} .rstat .l{font-size:11px;color:var(--ink2);margin-top:2px}
-  .raction{display:flex;gap:10px}
-  .raction button{flex:1;padding:11px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif}
-  .btn-p{background:var(--green);color:#fff;border:none} .btn-s{background:none;border:1.5px solid var(--border);color:var(--ink)}
-  .fc-wrap{perspective:1000px;height:210px;margin-bottom:1rem;cursor:pointer}
-  .fc-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .35s}
-  .fc-wrap.flipped .fc-inner{transform:rotateY(180deg)}
-  .fc-f,.fc-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.75rem;border:1px solid var(--border)}
-  .fc-f{background:var(--card)} .fc-b{background:var(--ink);color:#fff;transform:rotateY(180deg)}
-  .fc-word{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;margin-bottom:6px;text-align:center}
-  .fc-hint{font-size:12px;color:var(--ink3)}
-  .fc-freq{font-size:11px;color:var(--green);font-weight:600;margin-top:4px}
-  .fc-bword{font-size:24px;font-weight:700;margin-bottom:6px;text-align:center}
-  .fc-box{font-size:11px;color:#999;margin-top:10px}
-  .fc-tap{font-size:11px;color:var(--ink3);margin-top:14px}
-  .fc-nav{display:flex;gap:10px;justify-content:center;margin-bottom:1rem}
-  .fc-nav button{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif}
-  .btn-knew{background:var(--correct);border:1px solid var(--correct-b);color:#1B5E20}
-  .btn-miss{background:var(--wrong);border:1px solid var(--wrong-b);color:#B71C1C}
-  .fc-ctr{text-align:center;font-size:12px;color:var(--ink2);margin-bottom:1rem}
-  .leitner-info{display:flex;gap:6px;justify-content:center;margin-bottom:1.25rem;flex-wrap:wrap}
-  .lbox{font-size:10px;padding:3px 8px;border-radius:5px;background:var(--card);border:1px solid var(--border);color:var(--ink2)}
-  .lbox strong{color:var(--ink)}
-  .hack-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start}
-  .hack-num{width:30px;height:30px;background:var(--ink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px}
-  .hack-body{flex:1}
-  .hack-title{font-size:15px;font-weight:600;margin-bottom:4px}
-  .hack-desc{font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:6px}
-  .hack-ex{font-size:12px;background:var(--warn);border-left:2px solid var(--warn-b);padding:5px 10px;border-radius:0 5px 5px 0;color:#5D4037;font-style:italic}
-  .hack-verdict{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:6px}
-  .verdict-f{background:#FDECEA;color:#B71C1C} .verdict-v{background:#E8F5E9;color:#1B5E20} .verdict-both{background:#EDE7F6;color:#4527A0}
-  .ref-section{margin-bottom:2rem}
-  .ref-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--green);display:inline-block}
-  .ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px}
-  .ref-item{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:13px;gap:8px}
-  .ref-it{font-weight:600} .ref-en{color:var(--ink2);text-align:right;font-size:12px}
-  .ref-freq{font-size:10px;color:var(--green);font-weight:600;flex-shrink:0}
-  .prog-ov{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.75rem}
-  .pcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem;text-align:center}
-  .pcard .v{font-family:'Syne',sans-serif;font-size:34px;font-weight:800}
-  .pcard .l{font-size:11px;color:var(--ink2);margin-top:2px}
-  .catbar-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-  .catrow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border)}
-  .catrow:last-child{border-bottom:none}
-  .catname{font-size:13px;font-weight:500;min-width:130px}
-  .catbar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
-  .catfill{height:100%;background:var(--green);transition:width .5s}
-  .catpct{font-size:12px;color:var(--ink2);min-width:32px;text-align:right}
-  @media (max-width:600px){
-    header{padding:0 1rem} nav{padding:0 .5rem} main{padding:1.25rem .75rem 3rem}
-    .qtext{font-size:17px} .rscore{font-size:44px}
-  }
+:root{
+  --bg:#F1EFE9;
+  --ink:#191B20;
+  --ink-soft:#5C5F66;
+  --blue:#0A57A5;
+  --blue-dark:#08427D;
+  --red:#CC2431;
+  --red-dark:#A11B26;
+  --green:#017C4E;
+  --green-dark:#01603D;
+  --yellow:#F4B912;
+  --asphalt:#33343A;
+  --asphalt-dark:#26272C;
+  --card:#FFFFFF;
+  --shadow:0 2px 0 rgba(25,27,32,.14);
+  --radius:16px;
+  --disp:'Archivo',system-ui,sans-serif;
+  --body:'Public Sans',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:var(--body);
+  background:var(--bg);
+  color:var(--ink);
+  overscroll-behavior-y:none;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.hidden{display:none!important}
+
+/* ============ HEADER ============ */
+header{
+  position:sticky;top:0;z-index:50;
+  background:var(--bg);
+  border-bottom:2px solid rgba(25,27,32,.08);
+  padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:560px;margin:0 auto;width:100%;
+}
+.brand{font-family:var(--disp);font-weight:900;font-size:17px;letter-spacing:-.02em}
+.brand span{color:var(--blue)}
+.stats{display:flex;gap:14px;align-items:center}
+.stat{display:flex;align-items:center;gap:5px;font-family:var(--disp);font-weight:700;font-size:15px}
+.stat svg{width:20px;height:20px}
+.stat.streak{color:#E2560E}
+.stat.xp{color:var(--blue)}
+
+/* ============ ROAD MAP ============ */
+#screen-map{max-width:560px;margin:0 auto;padding-bottom:80px}
+.map-intro{padding:22px 20px 8px}
+.map-intro h1{
+  font-family:var(--disp);font-weight:900;font-size:26px;line-height:1.1;
+  letter-spacing:-.02em;
+}
+.map-intro p{color:var(--ink-soft);margin-top:6px;font-size:14.5px;line-height:1.45}
+
+.road-wrap{position:relative;margin-top:18px}
+.road{
+  position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:74px;background:var(--asphalt);
+  border-left:5px solid #C9C6BC;border-right:5px solid #C9C6BC;
+}
+.road::before{
+  content:"";position:absolute;top:0;bottom:0;left:50%;width:6px;
+  transform:translateX(-50%);
+  background:repeating-linear-gradient(to bottom,#F1EFE9 0 26px,transparent 26px 54px);
+}
+.units{position:relative;display:flex;flex-direction:column;gap:34px;padding:26px 0 40px}
+.unit-row{display:flex;align-items:center;justify-content:center;position:relative}
+.unit-node{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  width:150px;position:relative;z-index:2;
+  transition:transform .12s ease;
+}
+.unit-node:active{transform:scale(.96)}
+.unit-row:nth-child(odd) .unit-node{margin-right:190px}
+.unit-row:nth-child(even) .unit-node{margin-left:190px}
+@media(max-width:430px){
+  .unit-row:nth-child(odd) .unit-node{margin-right:150px}
+  .unit-row:nth-child(even) .unit-node{margin-left:150px}
+}
+
+/* road-sign shaped badges */
+.sign{
+  width:84px;height:84px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--disp);font-weight:900;font-size:26px;color:#fff;
+  position:relative;filter:drop-shadow(0 3px 0 rgba(25,27,32,.22));
+}
+.sign.circle{border-radius:50%;background:#fff;border:11px solid var(--red);color:var(--ink)}
+.sign.circle-blue{border-radius:50%;background:var(--blue)}
+.sign.square{border-radius:12px;background:var(--blue)}
+.sign.triangle{width:92px;height:84px;background:none;color:var(--ink)}
+.sign.triangle::before{
+  content:"";position:absolute;inset:0;
+  background:var(--red);
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+}
+.sign.triangle::after{
+  content:"";position:absolute;left:11px;right:11px;top:11px;bottom:7px;
+  background:#fff;
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+}
+.sign.triangle .glyph{position:relative;z-index:1;margin-top:16px}
+.sign.green{border-radius:12px;background:var(--green)}
+.sign.done::after{content:none}
+.sign .glyph{line-height:1}
+
+.unit-label{
+  background:var(--card);border-radius:12px;padding:7px 12px;text-align:center;
+  box-shadow:var(--shadow);border:1.5px solid rgba(25,27,32,.1);
+  min-width:132px;
+}
+.unit-label b{display:block;font-family:var(--disp);font-weight:700;font-size:13.5px;letter-spacing:-.01em}
+.unit-label small{color:var(--ink-soft);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.unit-bar{height:6px;border-radius:3px;background:rgba(25,27,32,.1);margin-top:6px;overflow:hidden}
+.unit-bar i{display:block;height:100%;background:var(--green);border-radius:3px;transition:width .4s ease}
+.unit-node.locked{opacity:.45;pointer-events:none}
+.unit-node.locked .sign{filter:grayscale(1) drop-shadow(0 3px 0 rgba(25,27,32,.18))}
+
+/* ============ UNIT MODAL ============ */
+.overlay{
+  position:fixed;inset:0;z-index:90;background:rgba(25,27,32,.5);
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.sheet{
+  background:var(--bg);width:100%;max-width:560px;
+  border-radius:22px 22px 0 0;padding:22px 20px 26px;
+  max-height:82vh;overflow-y:auto;
+  animation:up .22s ease;
+}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sheet-head{display:flex;gap:14px;align-items:center}
+.sheet-head .sign{width:60px;height:60px;font-size:19px;flex:none}
+.sheet-head .sign.triangle{width:66px;height:60px}
+.sheet-head .sign.circle{border-width:8px}
+.sheet-head h2{font-family:var(--disp);font-weight:900;font-size:21px;letter-spacing:-.02em}
+.sheet-head p{color:var(--ink-soft);font-size:13.5px;margin-top:2px}
+.word-grid{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 4px}
+.chip{
+  background:var(--card);border:1.5px solid rgba(25,27,32,.12);border-radius:10px;
+  padding:6px 10px;font-size:13px;font-weight:600;box-shadow:0 1.5px 0 rgba(25,27,32,.1);
+}
+.chip i{font-style:normal;color:var(--ink-soft);font-weight:400}
+.chip.s0{border-color:rgba(25,27,32,.12)}
+.chip.s1{border-color:var(--yellow)}
+.chip.s2{border-color:var(--green);background:#EAF5EF}
+.btn{
+  display:block;width:100%;text-align:center;
+  font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:.01em;
+  padding:15px;border-radius:14px;margin-top:14px;
+  transition:transform .08s ease;
+}
+.btn:active{transform:translateY(2px)}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 3px 0 var(--blue-dark)}
+.btn-ghost{background:transparent;color:var(--ink-soft);box-shadow:none;padding:10px}
+
+/* ============ LESSON ============ */
+#screen-lesson{max-width:560px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+.lesson-top{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.lesson-top .close{font-size:22px;color:var(--ink-soft);font-weight:700;padding:4px 8px}
+.progress{flex:1;height:14px;background:rgba(25,27,32,.12);border-radius:7px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--green);border-radius:7px;transition:width .35s ease}
+.hearts{display:flex;gap:3px;font-size:17px}
+.hearts .off{opacity:.22;filter:grayscale(1)}
+
+.ex-area{flex:1;padding:8px 20px 20px;display:flex;flex-direction:column}
+.ex-kind{
+  font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--ink-soft);margin:8px 0 10px;
+}
+.prompt-sign{
+  align-self:center;margin:10px 0 6px;text-align:center;
+  background:var(--blue);color:#fff;border-radius:14px;
+  padding:22px 26px;min-width:210px;max-width:100%;
+  font-family:var(--disp);font-weight:900;font-size:30px;letter-spacing:-.01em;line-height:1.1;
+  box-shadow:0 4px 0 var(--blue-dark);
+  border:3px solid #fff;outline:3px solid var(--blue);
+}
+.prompt-sign small{
+  display:block;font-family:var(--body);font-weight:600;font-size:12px;
+  letter-spacing:.08em;text-transform:uppercase;opacity:.75;margin-top:8px;
+}
+.prompt-en{
+  align-self:center;margin:10px 0 6px;text-align:center;
+  font-family:var(--disp);font-weight:900;font-size:24px;line-height:1.2;
+  padding:10px 6px;
+}
+.sentence-card{
+  background:var(--card);border:1.5px solid rgba(25,27,32,.12);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px;margin:8px 0 4px;
+}
+.sentence-card .it{font-family:var(--disp);font-weight:700;font-size:17.5px;line-height:1.4}
+.sentence-card .it mark{background:#FCE9A8;border-radius:4px;padding:0 3px}
+.sentence-card .lbl{
+  font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:8px;
+}
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.opt{
+  background:var(--card);border:2px solid rgba(25,27,32,.14);border-radius:14px;
+  box-shadow:0 2.5px 0 rgba(25,27,32,.14);
+  padding:14px 16px;font-size:16px;font-weight:600;text-align:left;
+  transition:transform .06s ease;
+}
+.opt:active{transform:translateY(2px)}
+.opt.picked{border-color:var(--blue);background:#EAF1F9}
+.opt.right{border-color:var(--green);background:#E5F3EC;box-shadow:0 2.5px 0 var(--green)}
+.opt.wrong{border-color:var(--red);background:#FBE9EA;box-shadow:0 2.5px 0 var(--red)}
+.opts.duo{flex-direction:row}
+.opts.duo .opt{flex:1;text-align:center;font-family:var(--disp);font-weight:900;font-size:18px;padding:20px 10px}
+.opt .sub{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-top:3px;font-family:var(--body)}
+
+.feedback{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  padding:16px 20px calc(18px + env(safe-area-inset-bottom));
+}
+.feedback .inner{max-width:520px;margin:0 auto}
+.feedback.ok{background:#D9EEE3}
+.feedback.bad{background:#F8DCDE}
+.feedback h3{font-family:var(--disp);font-weight:900;font-size:18px}
+.feedback.ok h3{color:var(--green-dark)}
+.feedback.bad h3{color:var(--red-dark)}
+.feedback p{font-size:14px;line-height:1.45;margin-top:4px;color:var(--ink)}
+.feedback .btn{margin-top:12px}
+.feedback.ok .btn{background:var(--green);box-shadow:0 3px 0 var(--green-dark);color:#fff}
+.feedback.bad .btn{background:var(--red);box-shadow:0 3px 0 var(--red-dark);color:#fff}
+.check-bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:55;
+  padding:14px 20px calc(16px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--bg) 70%,transparent);
+}
+.check-bar .btn{max-width:520px;margin:0 auto}
+.btn.disabled{opacity:.4;pointer-events:none}
+.ex-spacer{height:130px}
+
+/* ============ COMPLETE ============ */
+#screen-done{
+  max-width:560px;margin:0 auto;min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px;text-align:center;
+}
+.done-sign{
+  font-family:var(--disp);font-weight:900;color:#fff;background:var(--green);
+  border-radius:14px;padding:26px 34px;font-size:26px;
+  border:3px solid #fff;outline:3px solid var(--green);
+  box-shadow:0 5px 0 var(--green-dark);
+  transform:rotate(-2deg);
+}
+#screen-done h2{font-family:var(--disp);font-weight:900;font-size:24px;margin-top:26px;letter-spacing:-.02em}
+.done-stats{display:flex;gap:12px;margin-top:20px;width:100%;max-width:340px}
+.done-stat{
+  flex:1;background:var(--card);border-radius:14px;padding:14px 8px;
+  border:1.5px solid rgba(25,27,32,.12);box-shadow:var(--shadow);
+}
+.done-stat b{display:block;font-family:var(--disp);font-weight:900;font-size:22px}
+.done-stat span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft)}
+.done-stat.c-xp b{color:var(--blue)}
+.done-stat.c-acc b{color:var(--green)}
+.done-stat.c-str b{color:#E2560E}
+#screen-done .btn{max-width:340px}
+
+.tipline{
+  margin:14px 20px 0;padding:12px 14px;border-radius:12px;
+  background:#FFF7E0;border:1.5px solid #F0D98C;font-size:13.5px;line-height:1.45;
+}
+.tipline b{font-family:var(--disp)}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="logo">patente<span>.</span><em>it</em> trainer</div>
-  <div class="hstats">
-    <span>streak <strong id="hdr-streak">0</strong>🔥</span>
-    <span>answered <strong id="hdr-total">0</strong></span>
-    <span>accuracy <strong id="hdr-score">—</strong></span>
+  <div class="brand">PATENTE <span>PAROLE</span></div>
+  <div class="stats">
+    <div class="stat streak" title="Day streak">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 2s.7 2.6-1.2 5C10.5 9.3 8 10.5 8 14a4.5 4.5 0 0 0 9 0c0-1.2-.4-2.2-1-3 0 0-.3 1.5-1.5 2 .4-2.7-.6-6.3-1-11z"/><path d="M12 22a7 7 0 0 1-7-7c0-3 1.6-4.9 3-6.5-.2 1.6 0 3 .8 4C9.4 9.7 11 7.4 11 4c3 2 6 6.3 6 10a7 7 0 0 1-5 8z" opacity=".35"/></svg>
+      <span id="stat-streak">0</span>
+    </div>
+    <div class="stat xp" title="Total XP">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+      <span id="stat-xp">0</span>
+    </div>
   </div>
 </header>
-<nav>
-  <button class="ntab active" onclick="showPanel('home',this)">Practice</button>
-  <button class="ntab" onclick="showPanel('hacks',this)">Exam Hacks</button>
-  <button class="ntab" onclick="showPanel('flash',this)">Flashcards</button>
-  <button class="ntab" onclick="showPanel('ref',this)">Vocabulary</button>
-  <button class="ntab" onclick="showPanel('progress',this)">Progress</button>
-</nav>
-<main>
 
-<div id="panel-home" class="panel active">
-  <div id="mode-select">
-    <p style="font-size:13px;color:var(--ink2);margin-bottom:1.1rem;">Choose what to practise:</p>
-    <div class="mode-grid">
-      <div class="mode-card selected" onclick="selMode(this,'real')">
-        <div class="mode-tag">REAL EXAM</div>
-        <div class="mode-icon">🇮🇹</div>
-        <div class="mode-name">Real exam questions</div>
-        <div class="mode-desc">Actual VERO/FALSO questions from the official bank — answer in Italian, reveal English only if stuck</div>
-      </div>
-      <div class="mode-card" onclick="selMode(this,'trap')">
-        <div class="mode-tag">REAL EXAM</div>
-        <div class="mode-icon">🪤</div>
-        <div class="mode-name">Trap parser</div>
-        <div class="mode-desc">Real questions with negation chains — non, mai, senza. The hardest language skill on the exam</div>
-      </div>
-      <div class="mode-card" onclick="selMode(this,'vocab')">
-        <div class="mode-tag">FREQUENCY-RANKED</div>
-        <div class="mode-icon">🔤</div>
-        <div class="mode-name">Top exam vocabulary</div>
-        <div class="mode-desc">The most frequent words from all 6,962 questions, ranked by how often they appear</div>
-      </div>
-      <div class="mode-card" onclick="selMode(this,'hacks_q')">
-        <div class="mode-icon">🧠</div>
-        <div class="mode-name">Exam hacks</div>
-        <div class="mode-desc">Apply the 10 tricks to question patterns</div>
-      </div>
-      <div class="mode-card" onclick="selMode(this,'signal')">
-        <div class="mode-icon">⚠️</div>
-        <div class="mode-name">Signal words</div>
-        <div class="mode-desc">sempre, mai, vietato, purché — words that flip answers</div>
-      </div>
-      <div class="mode-card" onclick="selMode(this,'signs')">
-        <div class="mode-icon">🔺</div>
-        <div class="mode-name">Sign shapes</div>
-        <div class="mode-desc">Triangolo, cerchio, quadrato — shape/colour logic</div>
-      </div>
-    </div>
-    <button class="start-btn" onclick="startQuiz()">Start 10-question session →</button>
+<!-- ================= MAP ================= -->
+<main id="screen-map">
+  <div class="map-intro">
+    <h1>La strada per la patente</h1>
+    <p>Master the ~80 words that decide VERO or FALSO. Tap a sign to start a 10-question lesson. Words you miss come back until they stick.</p>
   </div>
-
-  <div id="quiz-area" style="display:none">
-    <div class="quiz-meta">
-      <span id="q-ctr">Question 1 / 10</span>
-      <span id="q-mode-lbl" style="color:var(--green);font-weight:500"></span>
-    </div>
-    <div class="prog-bar"><div class="prog-fill" id="q-prog" style="width:0%"></div></div>
-    <div class="qcard">
-      <span class="qid" id="q-id"></span>
-      <div class="qbadge" id="q-badge">—</div>
-      <div class="qtext" id="q-text">—</div>
-      <div class="qsub" id="q-sub"></div>
-      <div id="q-opts" class="opts"></div>
-      <button class="en-btn" id="en-btn" onclick="revealEN()" style="display:none">Show in English</button>
-      <div class="en-reveal" id="en-reveal"></div>
-      <div class="fb" id="q-fb"><div class="fb-lbl" id="fb-lbl"></div><div id="fb-det"></div></div>
-      <button class="next-btn" id="next-btn" onclick="nextQ()">Next →</button>
-    </div>
+  <div id="tip" class="tipline"></div>
+  <div class="road-wrap">
+    <div class="road"></div>
+    <div class="units" id="units"></div>
   </div>
-
-  <div id="results-area" style="display:none">
-    <div class="rcard">
-      <div class="rscore" id="r-score">—</div>
-      <div class="rlabel" id="r-lbl">—</div>
-      <div class="rgrid">
-        <div class="rstat"><div class="v" id="r-c">—</div><div class="l">correct</div></div>
-        <div class="rstat"><div class="v" id="r-w">—</div><div class="l">wrong</div></div>
-        <div class="rstat"><div class="v" id="r-str">—</div><div class="l">best streak</div></div>
-      </div>
-      <div class="raction">
-        <button class="btn-p" onclick="startQuiz()">Try again</button>
-        <button class="btn-s" onclick="backToModes()">Change mode</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="panel-hacks" class="panel">
-  <p style="font-size:13px;color:var(--ink2);margin-bottom:1.25rem;">The 10 patterns that let you answer correctly even with limited Italian.</p>
-  <div id="hacks-list"></div>
-</div>
-
-<div id="panel-flash" class="panel">
-  <div class="leitner-info" id="leitner-info"></div>
-  <div class="fc-ctr" id="fc-ctr">—</div>
-  <div class="fc-wrap" id="fc-wrap" onclick="flipCard()">
-    <div class="fc-inner">
-      <div class="fc-f">
-        <div class="fc-word" id="fc-front">—</div>
-        <div class="fc-freq" id="fc-freq"></div>
-        <div class="fc-tap">tap to reveal</div>
-      </div>
-      <div class="fc-b">
-        <div class="fc-bword" id="fc-back">—</div>
-        <div class="fc-box" id="fc-box"></div>
-      </div>
-    </div>
-  </div>
-  <div class="fc-nav">
-    <button class="btn-miss" onclick="cardRes(false)">✗ Missed</button>
-    <button class="btn-knew" onclick="cardRes(true)">✓ Knew it</button>
-  </div>
-  <div style="text-align:center;font-size:12px;color:var(--ink2)" id="fc-stats"></div>
-</div>
-
-<div id="panel-ref" class="panel">
-  <p style="font-size:13px;color:var(--ink2);margin-bottom:1rem;">All words ranked by how many times they appear across the 6,962 official questions.</p>
-  <div class="ref-section"><div class="ref-grid" id="ref-vocab"></div></div>
-</div>
-
-<div id="panel-progress" class="panel">
-  <div class="prog-ov" id="prog-ov"></div>
-  <div style="font-size:14px;font-weight:500;margin-bottom:10px">Accuracy by category</div>
-  <div class="catbar-wrap" id="cat-bars"></div>
-  <button class="btn-s" style="margin-top:1.25rem;padding:9px 18px;border-radius:8px;font-size:13px;cursor:pointer;font-family:Inter,sans-serif" onclick="resetProg()">Reset progress</button>
-</div>
-
 </main>
+
+<!-- ================= LESSON ================= -->
+<main id="screen-lesson" class="hidden">
+  <div class="lesson-top">
+    <button class="close" id="btn-quit" aria-label="Quit lesson">✕</button>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="hearts" id="hearts"></div>
+  </div>
+  <div class="ex-area" id="ex-area"></div>
+</main>
+
+<!-- ================= DONE ================= -->
+<main id="screen-done" class="hidden">
+  <div class="done-sign" id="done-sign">LEZIONE COMPLETATA</div>
+  <h2 id="done-msg"></h2>
+  <div class="done-stats">
+    <div class="done-stat c-xp"><b id="done-xp">0</b><span>XP earned</span></div>
+    <div class="done-stat c-acc"><b id="done-acc">0%</b><span>Accuracy</span></div>
+    <div class="done-stat c-str"><b id="done-streak">0</b><span>Day streak</span></div>
+  </div>
+  <button class="btn btn-blue" id="btn-continue" style="margin-top:26px">Back to the road</button>
+</main>
+
 <script>
-// ─── REAL EXAM DATA (extracted from official 6,962-question bank) ───
-const REAL_SENT = [{"id": 18732, "it": "Il conducente di un veicolo non deve fare sempre affidamento sul comportamento degli altri, che può non essere corretto", "en": "The driver of a vehicle must not always rely on the behavior of others, which may not be correct.", "ans": true}, {"id": 18378, "it": "L'isola di traffico può essere percorsa solo dai taxi e dagli autobus urbani", "en": "The traffic island can only be used by taxis and city buses.", "ans": false}, {"id": 18404, "it": "Una zona a traffico limitato è un'area in cui può essere limitata la circolazione dei veicoli solo in alcune ore", "en": "A limited traffic zone is an area in which the circulation of vehicles can be limited only during certain hours.", "ans": true}, {"id": 18410, "it": "Una zona a traffico limitato è un'area nella quale è consentito solo il transito di ciclomotori e biciclette", "en": "A limited traffic zone is an area in which only mopeds and bicycles are allowed to pass.", "ans": false}, {"id": 18493, "it": "La corsia non può mai essere attraversata dai pedoni", "en": "The lane can never be crossed by pedestrians", "ans": false}, {"id": 18576, "it": "E' consentito aumentare la cilindrata dei quadricicli leggeri purché non si aumenti la velocità", "en": "It is permitted to increase the engine capacity of light quadricycles as long as the speed is not increased", "ans": false}, {"id": 18708, "it": "Sono consentite le gare di velocità, anche se non autorizzate, purché partecipino solo due autovetture", "en": "Speed races are permitted, even if not authorised, as long as only two cars participate.", "ans": false}, {"id": 18738, "it": "Il conducente di un veicolo deve rispettare gli agenti del traffico solo se sono in divisa", "en": "The driver of a vehicle must only respect traffic officers if they are in uniform.", "ans": false}, {"id": 18748, "it": "Nello specchietto retrovisore il conducente deve controllare solo se sopraggiungono autocarri o autobus", "en": "In the rearview mirror the driver only has to check whether trucks or buses are approaching.", "ans": false}, {"id": 18846, "it": "E' consentito posteggiare un veicolo davanti agli scivoli del marciapiede solo dalle ore 22.00 alle ore 8.00", "en": "It is permitted to park a vehicle in front of the sidewalk ramps only from 10.00 pm to 8.00 am", "ans": false}, {"id": 22286, "it": "Il conducente deve sempre mantenere il controllo del veicolo", "en": "The driver must always maintain control of the vehicle.", "ans": true}, {"id": 22287, "it": "Il conducente deve sempre essere in grado di arrestare il veicolo in condizioni di sicurezza", "en": "The driver must always be able to stop the vehicle safely.", "ans": true}, {"id": 22311, "it": "E' obbligatorio ridurre la velocità solo in presenza degli agenti del traffico", "en": "It is mandatory to reduce speed only in the presence of traffic officers.", "ans": false}, {"id": 22314, "it": "E' obbligatorio ridurre la velocità solo se l'autovettura è scarica", "en": "It is mandatory to reduce speed only if the passenger car is empty.", "ans": false}, {"id": 22448, "it": "Si deve tenere una velocità adeguata solo alle nostre condizioni di salute", "en": "Speed must be maintained at a level appropriate only to our health conditions.", "ans": false}, {"id": 22449, "it": "Si deve tenere una velocità sempre superiore a 30 km/h", "en": "Speed must always be kept above 30 km/h.", "ans": false}, {"id": 22467, "it": "In autostrada, nella corsia riservata al sorpasso, non è consentito superare la velocità di 110 km/h", "en": "On the motorway, in the lane reserved for overtaking, it is not permitted to exceed a speed of 110 km/h", "ans": false}, {"id": 22651, "it": "La distanza di sicurezza deve essere mantenuta solo dai quadricicli a motore", "en": "The safe distance must be maintained only by motor quadricycles", "ans": false}, {"id": 22656, "it": "La distanza di sicurezza deve essere sempre uguale allo spazio di frenatura del veicolo", "en": "The safe distance must always be equal to the braking distance of the vehicle", "ans": false}, {"id": 22685, "it": "Chi guida un veicolo deve guidare sempre al centro della strada, però senza superare la striscia di corsia", "en": "Those who drive a vehicle must always drive in the center of the road, but without crossing the lane marking.", "ans": false}, {"id": 22687, "it": "Chi guida un veicolo può sorpassare in ogni condizione di traffico, purché non ci sia il segnale di divieto", "en": "Those who drive a vehicle may overtake in any traffic condition, provided there is no prohibition signal.", "ans": false}, {"id": 22774, "it": "In caso di traffico intenso il conducente deve mantenere sempre la distanza di sicurezza dal veicolo che lo precede", "en": "In case of heavy traffic, the driver must always maintain a safe distance from the vehicle in front.", "ans": true}, {"id": 22894, "it": "Giungendo ad un incrocio è consentito impegnarlo solo se si ha la possibilità di proseguire e liberarlo", "en": "When approaching an intersection, it is permitted to enter it only if there is a possibility to proceed and clear it.", "ans": true}, {"id": 22900, "it": "In vicinanza o in corrispondenza degli incroci non è consentito cambiare improvvisamente la direzione di marcia", "en": "Near or at intersections, suddenly changing the direction of travel is not permitted.", "ans": true}, {"id": 22901, "it": "In vicinanza o in corrispondenza degli incroci non è consentito effettuare l'inversione di marcia", "en": "Near or at intersections, making a U-turn is not permitted.", "ans": true}, {"id": 22902, "it": "In corrispondenza di incroci extraurbani non è consentito effettuare la sosta", "en": "At extra-urban intersections, stopping is not permitted.", "ans": true}, {"id": 22903, "it": "In corrispondenza di incroci extraurbani non è consentito effettuare la fermata", "en": "At extra-urban intersections, halting is not permitted.", "ans": true}, {"id": 22905, "it": "In vicinanza o in corrispondenza degli incroci non è consentito usare i fari anabbaglianti", "en": "In the vicinity or at intersections, it is not permitted to use low beam headlights.", "ans": false}, {"id": 22906, "it": "In vicinanza o in corrispondenza degli incroci extraurbani non è consentito superare la velocità di 60 km/h", "en": "In the vicinity or at extra-urban intersections, it is not permitted to exceed a speed of 60 km/h.", "ans": false}, {"id": 22908, "it": "In vicinanza o in corrispondenza degli incroci regolati da semaforo non è consentito il sorpasso", "en": "In the vicinity or at intersections controlled by traffic lights, overtaking is not permitted.", "ans": false}, {"id": 22941, "it": "Quando manca la segnaletica orizzontale non è consentito effettuare manovre di inversione del senso di marcia", "en": "When horizontal signage is missing, performing U-turn maneuvers is not permitted.", "ans": false}, {"id": 22942, "it": "Qualora la linea di margine della carreggiata sia continua, non è consentito effettuare l'inversione di marcia", "en": "If the edge line of the roadway is solid, performing a U-turn is not permitted.", "ans": false}, {"id": 22943, "it": "Fuori dai centri abitati non è consentito effettuare l'inversione di marcia", "en": "Outside populated areas, performing a U-turn is not permitted.", "ans": false}, {"id": 23490, "it": "E' sempre vietato effettuare la manovra di sorpasso a destra", "en": "It is always prohibited to carry out the overtaking maneuver on the right.", "ans": false}, {"id": 23513, "it": "E' vietato il sorpasso se si deve valicare la striscia longitudinale bianca continua semplice o doppia", "en": "Overtaking is prohibited if it requires crossing a single or double continuous white line.", "ans": true}, {"id": 23525, "it": "Il sorpasso è consentito in caso di scarsa visibilità purché si lampeggi durante la manovra", "en": "Overtaking is allowed in case of poor visibility as long as the hazard lights are used during the maneuver.", "ans": false}, {"id": 23530, "it": "E' consentito il sorpasso sulle intersezioni purché non provenga nessuno dalla destra", "en": "Overtaking at intersections is allowed as long as no one is coming from the right.", "ans": false}, {"id": 23531, "it": "E' consentito il sorpasso sulle corsie d'accelerazione purché la manovra venga effettuata con attenzione", "en": "Overtaking on acceleration lanes is allowed as long as the maneuver is carried out with caution.", "ans": false}, {"id": 23532, "it": "E' sempre consentito superare un veicolo a due ruote", "en": "It is always allowed to overtake a two-wheeled vehicle.", "ans": false}, {"id": 23613, "it": "Il sorpasso in autostrada può essere motivo di incidente, se si viaggia con le luci anabbaglianti sempre accese", "en": "Overtaking on the motorway can be the cause of an accident, if you are travelling with the low beam is always switched on", "ans": false}, {"id": 23653, "it": "Durante la fermata il conducente deve essere sempre presente e pronto a riprendere la marcia", "en": "During the stop, the driver must always be present and ready to resume the march", "ans": true}, {"id": 23654, "it": "Durante la fermata il conducente deve sempre adottare le opportune cautele atte ad evitare incidenti", "en": "During the stop, the driver should always take appropriate precautions necessary to prevent accidents", "ans": true}, {"id": 23922, "it": "E' consentito ai motocicli farsi trainare, ma solo da autovetture", "en": "It is allowed to motorcycles get towed, but only by car", "ans": false}, {"id": 24017, "it": "Il giubbotto retroriflettente ad alta visibilità è utile solo quando si deve sostituire una ruota forata", "en": "The jacket is retro-reflective, high-visibility, is only useful when you need to replace a punctured tire", "ans": false}, {"id": 24145, "it": "Su un veicolo a motore non è consentito utilizzare lampade non omologate", "en": "On a motor vehicle is not allowed to use lamps that are not registered", "ans": true}, {"id": 24159, "it": "E' obbligatorio accendere i proiettori anabbaglianti nelle gallerie stradali, solo se scarsamente illuminate", "en": "It is mandatory to switch on the dipped-beam headlamps in the road tunnels, only if it is poorly lit", "ans": false}, {"id": 24165, "it": "Durante la marcia, l'uso delle luci anabbaglianti non è consentito nelle gallerie illuminate", "en": "While driving, the use of the light beam is not allowed in the lit galleries", "ans": false}, {"id": 24166, "it": "Durante la marcia, l'uso delle luci di posizione è sempre consentito in alternativa a quelle anabbaglianti", "en": "When driving, the light is always allowed, in alternative to the dipped-beam headlamps", "ans": false}, {"id": 24185, "it": "La luce della targa di un autoveicolo si deve accendere solo di notte", "en": "The light of the plate, a vehicle must turn on the night", "ans": false}, {"id": 24340, "it": "Il casco è obbligatorio per i conducenti di ciclomotori a due ruote, solo se minorenni", "en": "The helmet is obligatory for the drivers for two-wheel mopeds, only if underage", "ans": false}, {"id": 24341, "it": "Il casco non è obbligatorio per i conducenti di ciclomotori a due ruote, titolari di patente della categoria B", "en": "The helmet is not mandatory for the drivers for two-wheel mopeds, holders of a driving licence for category B", "ans": false}, {"id": 24342, "it": "Il casco non è obbligatorio per i conducenti di ciclomotori a due ruote", "en": "The helmet is not mandatory for the drivers for two-wheel mopeds", "ans": false}, {"id": 24356, "it": "Non è obbligatorio l'uso delle cinture di sicurezza sui veicoli muniti di air- bag", "en": "It is not mandatory to use safety belts on vehicles equipped with airbags", "ans": false}, {"id": 24370, "it": "E' consentito il trasporto di bambini senza che siano assicurati a sistemi di ritenuta, purché su percorsi urbani", "en": "It is allowed to transport children without that are sure to restraint systems, as long as on urban routes", "ans": false}, {"id": 24401, "it": "Durante la marcia, il casco deve essere sempre correttamente allacciato", "en": "During the march, the helmet must always be correctly fastened", "ans": true}, {"id": 24412, "it": "Il casco deve essere completamente allacciato solo sui percorsi extraurbani", "en": "The helmet must be completely tied only on suburban locations", "ans": false}, {"id": 24413, "it": "Quando si circola nelle zone a velocità controllata inferiore a 30 km/h, non è obbligatorio l'uso del casco", "en": "When circulating in the areas controlled speed less than 30 km/h, it is not mandatory to wear a helmet", "ans": false}, {"id": 24422, "it": "La visiera del casco può essere riparata con nastro adesivo, purché sia di tipo ultra trasparente", "en": "The visor of the helmet can be fixed with adhesive tape, as long as it is ultra transparent", "ans": false}, {"id": 24494, "it": "La patente di categoria A1 può essere conseguita solo da chi è già in possesso della patente AM", "en": "Category A1 can be attained only by someone who is already in the possession of a licence AM", "ans": false}, {"id": 24510, "it": "La patente di categoria A2 può essere conseguita solo se si è già in possesso della patente di categoria A1", "en": "The license category A2 can only be achieved if you are already in possession of the driving licence of category A1", "ans": false}, {"id": 24564, "it": "La patente di categoria B con codice armonizzato 96, può essere conseguita solo se si è già in possesso della patente A", "en": "The category B driving license with harmonized code 96 can only be obtained if one already holds a category A license.", "ans": false}, {"id": 24857, "it": "Soccorrere un ferito della strada non è un obbligo imposto dalla legge, ma solo un dovere morale", "en": "Assisting a road casualty is not a legal obligation, but rather a moral duty", "ans": false}, {"id": 24859, "it": "Non è obbligatorio soccorrere un ferito della strada, se per farlo, si crea intralcio alla circolazione", "en": "It is not mandatory to assist a road casualty if doing so would obstruct traffic", "ans": false}, {"id": 24860, "it": "Soccorrere un ferito della strada è obbligatorio solo per i medici e il personale sanitario", "en": "Assisting a road casualty is mandatory only for doctors and healthcare personnel", "ans": false}, {"id": 24861, "it": "Non è obbligatorio soccorrere un ferito della strada, per non mettere a repentaglio la propria sicurezza", "en": "It is not mandatory to assist a road casualty in order to avoid jeopardizing one's own safety", "ans": false}, {"id": 24868, "it": "Durante un intervento di primo soccorso non bisogna mai toccare il ferito se non è ancora arrivata la polizia", "en": "During a first aid intervention, one should never touch the injured person until the police have arrived.", "ans": false}, {"id": 24938, "it": "Chi è coinvolto in un incidente stradale deve allontanarsi sempre e subito dal luogo in cui si è verificato", "en": "Anyone involved in a road accident must always and immediately move away from the location where it occurred", "ans": false}, {"id": 24964, "it": "Durante la guida, si deve fare uso di occhiali da vista o di lenti a contatto solo quando la miopia supera 6 diottrie", "en": "While driving, glasses or contact lenses must be used only when myopia exceeds 6 diopters", "ans": false}, {"id": 25060, "it": "Il certificato di assicurazione obbligatoria deve essere sempre tenuto a bordo del veicolo", "en": "The mandatory insurance certificate must always be kept on board the vehicle.", "ans": true}, {"id": 25080, "it": "Per evitare rumori fastidiosi durante la guida non si deve frenare bruscamente, se non è strettamente necessario", "en": "To avoid annoying noises while driving, one should not brake abruptly unless it is strictly necessary.", "ans": true}, {"id": 25128, "it": "L'inquinamento dell'aria prodotto dai veicoli a motore può diminuire se si circola sempre con marce basse", "en": "Air pollution produced by motor vehicles can decrease if driving is always done in low gears.", "ans": false}, {"id": 25266, "it": "Nei veicoli con il \"ruotino\" applicato (ruota di scorta di ridotte dimensioni) non è consentito trasportare passeggeri", "en": "In vehicles with the \"space-saver\" applied (small spare wheel), it is not permitted to transport passengers.", "ans": false}, {"id": 31024, "it": "Il conducente non deve mai sopravvalutare la propria abilità di guida", "en": "The driver must never overestimate their driving ability.", "ans": true}, {"id": 18355, "it": "Nelle strade extraurbane principali possono circolare solo alcune categorie di veicoli a motore", "en": "Only certain categories of motor vehicles are allowed to circulate on main extra-urban roads", "ans": true}, {"id": 18358, "it": "Sulle strade extraurbane principali è consentito circolare alla velocità massima di 130 km/h", "en": "On main extra-urban roads, you are allowed to travel at a maximum speed of 130 km/h", "ans": false}, {"id": 18361, "it": "Sulle strade extraurbane principali è consentito circolare alla stessa velocità massima prevista per le autostrade", "en": "On main extra-urban roads, you are allowed to drive at the same maximum speed as on motorways.", "ans": false}, {"id": 18369, "it": "L'isola di traffico può essere a raso o in rilievo (rialzata)", "en": "The traffic island can be flush or raised", "ans": true}, {"id": 18371, "it": "L'isola di traffico è una parte della strada sulla quale è vietato il transito dei motocicli", "en": "The traffic island is a part of the road where the transit of motorcycles is prohibited", "ans": true}, {"id": 18374, "it": "L'isola di traffico è una parte della strada sulla quale è vietato il transito dei veicoli", "en": "The traffic island is a part of the road on which the transit of vehicles is prohibited", "ans": true}, {"id": 18387, "it": "L'isola di traffico è una parte della strada sulla quale è consentito il transito dei ciclomotori", "en": "The traffic island is a part of the road on which the transit of mopeds is permitted", "ans": false}, {"id": 18396, "it": "L'intersezione (incrocio) a raso può essere regolata da semaforo", "en": "The at-grade intersection (crossroads) can be regulated by traffic lights", "ans": true}, {"id": 18406, "it": "In una zona a traffico limitato possono circolare solo i veicoli autorizzati", "en": "In a limited traffic zone only authorised vehicles can circulate", "ans": true}, {"id": 18411, "it": "Una zona a traffico limitato è un'area sempre vietata al transito dei veicoli a motore", "en": "A limited traffic zone is an area where motor vehicles are always prohibited from transit.", "ans": false}, {"id": 18417, "it": "In un passaggio a livello si può trovare la croce di S. Andrea", "en": "At a level crossing you can find the cross of St. Andrew", "ans": true}, {"id": 18418, "it": "In un passaggio a livello si può trovare un dispositivo di segnalazione acustica", "en": "At a level crossing you can find an acoustic signalling device", "ans": true}, {"id": 18425, "it": "Nelle aree pedonali possono transitare i veicoli ad emissione zero (elettrici), se espressamente consentito", "en": "Zero-emission vehicles can travel in pedestrian areas ( electrical ), if expressly allowed", "ans": true}, {"id": 18431, "it": "Nelle aree pedonali possono transitare tutti i motocicli, purché diano la precedenza ai pedoni", "en": "All motorcycles can travel in pedestrian areas, as long as they give priority to pedestrians.", "ans": false}, {"id": 18433, "it": "Nelle aree pedonali i ciclomotori possono transitare solo di giorno", "en": "Mopeds can only travel in pedestrian areas during the day", "ans": false}, {"id": 18435, "it": "Nelle aree pedonali possono transitare i quadricicli a motore, purché non superino la velocità di 50 km/h", "en": "Motorized quadricycles can travel in pedestrian areas, as long as they do not exceed a speed of 50 km/h", "ans": false}, {"id": 18436, "it": "La strada può essere suddivisa in carreggiate", "en": "The road can be divided into carriageways", "ans": true}, {"id": 18437, "it": "La strada può comprendere le piste ciclabili", "en": "The road may include cycle paths", "ans": true}, {"id": 18438, "it": "La strada può essere a senso unico di circolazione", "en": "The road may be one-way traffic", "ans": true}, {"id": 18439, "it": "La strada può essere a doppio senso di circolazione", "en": "The road may be two-way traffic", "ans": true}, {"id": 18453, "it": "L'autostrada deve essere lateralmente recintata", "en": "The highway must be fenced off on the sides", "ans": true}, {"id": 18454, "it": "Nelle autostrade possono circolare solo le autovetture", "en": "Only cars can circulate on the motorways", "ans": false}, {"id": 18456, "it": "L'autostrada può comprendere piste ciclabili", "en": "The highway may include cycle paths", "ans": false}, {"id": 18458, "it": "Nelle autostrade possono circolare solo gli autoveicoli", "en": "Only motor vehicles can circulate on the motorways", "ans": false}, {"id": 18460, "it": "La carreggiata può essere a senso unico di circolazione", "en": "The carriageway may be one-way traffic", "ans": true}, {"id": 18461, "it": "La carreggiata può essere a doppio senso di circolazione", "en": "The carriageway may be two-way", "ans": true}, {"id": 18462, "it": "La carreggiata può essere suddivisa in corsie", "en": "The roadway can be divided into lanes", "ans": true}, {"id": 18478, "it": "La corsia può essere destinata alla normale marcia dei veicoli", "en": "The lane can be used for normal vehicle traffic", "ans": true}, {"id": 18483, "it": "La corsia può essere riservata alla circolazione di alcune categorie di veicoli (taxi, autobus, ecc.)", "en": "The lane may be reserved for the circulation of certain categories of vehicles (taxis, buses, etc.)", "ans": true}, {"id": 18484, "it": "La corsia può essere destinata ad effettuare sorpassi", "en": "The lane may be designated for overtaking", "ans": true}, {"id": 18485, "it": "L'ente proprietario della strada può imporre che su una corsia i veicoli transitino ad una velocità minima obbligatoria", "en": "The road owner can impose that vehicles travel at a mandatory minimum speed on a lane.", "ans": true}, {"id": 18487, "it": "La corsia può essere destinata alle soste di emergenza, in caso di guasto o malessere", "en": "The lane can be used for emergency stops in the event of a breakdown or illness.", "ans": true}, {"id": 18488, "it": "La corsia può essere riservata ai veicoli che intendono svoltare (corsia specializzata)", "en": "The lane can be reserved for vehicles intending to turn (specialized lane)", "ans": true}, {"id": 18489, "it": "La corsia può essere destinata al rallentamento dei veicoli in uscita dalle autostrade", "en": "The lane can be used to slow down vehicles exiting motorways", "ans": true}, {"id": 18490, "it": "La corsia è destinata solo al transito dei pedoni", "en": "The lane is intended for pedestrians only.", "ans": false}, {"id": 18491, "it": "La corsia può essere a doppio senso di circolazione", "en": "The lane can be two-way traffic", "ans": false}, {"id": 18502, "it": "La corsia di accelerazione può essere utilizzata per il sorpasso", "en": "The acceleration lane can be used for overtaking", "ans": false}, {"id": 18508, "it": "La corsia di decelerazione può essere utilizzata per la sosta dei veicoli", "en": "The deceleration lane can be used for parking vehicles", "ans": false}, {"id": 18520, "it": "Il marciapiede consente la sosta dei veicoli solo in presenza di apposite strisce di parcheggio", "en": "The sidewalk allows vehicles to park only in the presence of designated parking strips", "ans": true}, {"id": 18528, "it": "Il salvagente può essere segnalato da colonnine luminose a luce gialla fissa", "en": "The life jacket can be signalled by light columns with a fixed yellow light", "ans": true}, {"id": 18535, "it": "Il passo carrabile deve essere corredato da apposito segnale, che riporti l'ente e il numero di autorizzazione", "en": "The driveway must be accompanied by a specific sign, which shows the entity and the authorization number", "ans": true}, {"id": 18568, "it": "La potenza dei quadricicli non leggeri è sempre inferiore o uguale a 15 kW", "en": "The power of non-light quadricycles is always less than or equal to 15 kW", "ans": true}, {"id": 18577, "it": "E' consentito sostituire il motore del quadriciclo leggero per aumentare la velocità massima oltre i 45 km/h", "en": "It is permitted to replace the engine of the light quadricycle to increase the maximum speed above 45 km/h", "ans": false}, {"id": 18591, "it": "Sulle macchine agricole e sui loro rimorchi è consentito il trasporto di persone in piedi", "en": "The transport of standing people is permitted on agricultural machinery and their trailers", "ans": false}, {"id": 18595, "it": "I caravan (roulottes) sono utilizzabili come alloggio solo con veicolo fermo", "en": "Caravans (roulottes) can only be used as accommodation when the vehicle is stationary.", "ans": true}, {"id": 18607, "it": "Sulle autocaravan (camper) è possibile viaggiare in piedi, solo per brevi tratti", "en": "In camper vans it is possible to travel standing up, only for short distances", "ans": false}, {"id": 18621, "it": "Nella parte posteriore degli autobus deve essere apposto un segnale che indica la velocità minima consentita", "en": "A sign indicating the minimum permitted speed must be placed on the rear of buses", "ans": false}];
-const REAL_TRAP = [{"id": 18409, "it": "In una zona a traffico limitato non possono entrare più di un certo numero di veicoli", "en": "In a limited traffic zone, no more than a certain number of vehicles can enter", "ans": false}, {"id": 18450, "it": "Le macchine agricole non possono circolare in autostrada", "en": "Agricultural machinery cannot circulate on the motorway", "ans": true}, {"id": 18524, "it": "Il marciapiede è riservato ai pedoni e ai veicoli in sosta, qualora non sia rialzato", "en": "The sidewalk is reserved for pedestrians and parked vehicles, unless it is raised", "ans": false}, {"id": 18547, "it": "I ciclomotori a due ruote non possono avere un motore termico di cilindrata superiore a 50 cm3", "en": "Two-wheeled mopeds cannot have a combustion engine with a cylinder capacity greater than 50 cm3", "ans": true}, {"id": 18573, "it": "E' consentito sostituire il dispositivo di scarico dei quadricicli leggeri per aumentare la velocità massima, purché non si aumenti la cilindrata del motore", "en": "It is permitted to replace the exhaust system of light quadricycles to increase the maximum speed, provided that the engine displacement is not increased", "ans": false}, {"id": 18650, "it": "L'autovettura non può avere più di nove posti, compreso il conducente", "en": "The car cannot have more than nine seats, including the driver", "ans": true}, {"id": 18651, "it": "L'autobus non è un'autovettura", "en": "The bus is not a car", "ans": true}, {"id": 18655, "it": "Le autovetture non possono trainare carrelli-appendice o rimorchi", "en": "Cars cannot tow trailers or trailers", "ans": false}, {"id": 18664, "it": "L'autosnodato non è classificato rimorchio", "en": "The articulated bus is not classified as a trailer", "ans": true}, {"id": 18665, "it": "L'autocaravan non è un rimorchio", "en": "The campervan is not a trailer", "ans": true}, {"id": 18666, "it": "Il caravan non è un rimorchio", "en": "The caravan is not a trailer", "ans": false}, {"id": 18699, "it": "E' consentito spostare la segnaletica stradale, se non si tratta di segnali di pericolo", "en": "It is permitted to move road signs, unless they are danger signs.", "ans": false}, {"id": 18716, "it": "Il conducente di veicolo a due ruote può circolare portando con sé un animale domestico, se custodito in apposita gabbia, purché non sia sporgente di oltre 50 centimetri.", "en": "The driver of a two-wheeled vehicle may travel with a pet, if kept in a suitable cage, provided that it does not protrude by more than 50 centimetres.", "ans": true}, {"id": 18733, "it": "Il conducente di un veicolo non può pretendere di passare per primo quando sorge il dubbio che non gli venga concessa la precedenza", "en": "The driver of a vehicle cannot claim to go first when there is a doubt that he is not being given priority.", "ans": true}, {"id": 18747, "it": "Il conducente che scende da un veicolo in sosta non deve controllare se sopraggiungono ciclisti", "en": "The driver getting out of a parked vehicle does not have to check whether cyclists are approaching", "ans": false}, {"id": 18777, "it": "Il conducente deve dare la precedenza al pedone non vedente con il bastone bianco che attraversa la strada fuori dalle strisce pedonali, anche se non è accompagnato da un cane guida", "en": "The driver must give way to a blind pedestrian with a white cane who crosses the road outside the pedestrian crossing, even if he is not accompanied by a guide dog.", "ans": true}, {"id": 18816, "it": "Alla guida di un veicolo, in vicinanza di una piazzola di fermata di autobus per scolari, non si deve rallentare, per evitare di ostacolare la circolazione degli altri veicoli", "en": "When driving a vehicle, near a school bus stop, you must not slow down, to avoid obstructing the circulation of other vehicles.", "ans": false}, {"id": 18821, "it": "Alla guida di un veicolo, in vicinanza di una piazzola di fermata di autobus per scolari, non si può proseguire nella marcia se le portiere dello scuolabus sono ancora aperte", "en": "When driving a vehicle near a school bus stop, you cannot continue driving if the school bus doors are still open", "ans": false}, {"id": 18822, "it": "Alla guida di un veicolo, in vicinanza di una piazzola di fermata di autobus per scolari, non è necessario rallentare se lo scuolabus è fermo", "en": "When driving a vehicle near a school bus stop, it is not necessary to slow down if the school bus is stationary.", "ans": false}, {"id": 18825, "it": "Il conducente di un veicolo diverso dai taxi non può sostare nei posteggi riservati ai taxi", "en": "The driver of a vehicle other than a taxi cannot park in taxi parking spaces.", "ans": true}, {"id": 18831, "it": "Quando la carreggiata è occupata da ciclisti o pedoni, non è prudente sorpassarli se non si può rispettare una distanza laterale sufficiente.", "en": "When the roadway is occupied by cyclists or pedestrians, it is not prudent to overtake them if a sufficient lateral distance cannot be maintained.", "ans": true}, {"id": 18837, "it": "Il conducente, di notte, non deve dare la precedenza ai pedoni che attraversano sulle strisce pedonali", "en": "At night, the driver must not give way to pedestrians crossing on pedestrian crossings", "ans": false}, {"id": 21197, "it": "Il suono prolungato del fischietto da parte dell'agente preposto al traffico indica che occorre arrestarsi, se non si è ancora occupato l'incrocio", "en": "A prolonged sound of the whistle by the traffic officer indicates that you must stop, if you have not yet occupied the intersection.", "ans": true}, {"id": 21203, "it": "Avvicinandosi ad un passaggio a livello con luci rosse accese e semibarriera ancora alzata, non si deve accelerare per attraversare prima che si abbassi la semibarriera", "en": "When approaching a level crossing with the red lights on and the half-barrier still up, you must not accelerate to cross before the half-barrier is lowered.", "ans": true}, {"id": 21204, "it": "Avvicinandosi ad un passaggio a livello con luci rosse accese e semibarriera ancora alzata, si può passare velocemente, se non si vede sopraggiungere il treno", "en": "When approaching a level crossing with the red lights on and the half barrier still up, you can pass quickly if you don't see the train coming.", "ans": false}, {"id": 21208, "it": "Avvicinandosi ad un passaggio a livello con luci rosse accese e semibarriera ancora alzata, è possibile attraversare i binari se non si sente ancora il fischio del treno", "en": "When approaching a level crossing with the red lights on and the half-barrier still up, it is possible to cross the tracks if the train whistle has not yet been heard.", "ans": false}, {"id": 22473, "it": "Se si attraversa ad alta velocità un incrocio avendo diritto di precedenza, in caso di incidente, non può escludersi un concorso di colpa", "en": "If you cross an intersection at high speed while having the right of way, in the event of an accident, a shared fault cannot be excluded.", "ans": true}, {"id": 22477, "it": "Se si attraversa un incrocio con diritto di precedenza, non si ha alcun obbligo di rallentare", "en": "If you cross an intersection with the right of way, you have no obligation to slow down.", "ans": false}, {"id": 22480, "it": "In caso di arresto forzato di un veicolo sui binari di un passaggio a livello, se non è possibile spostarlo subito dai binari, bisogna far scendere immediatamente tutte le persone che si trovano a bordo, e avvisare la stazione ferroviaria", "en": "In the event of a forced stop of a vehicle on the tracks of a level crossing, if it is not possible to move it immediately off the tracks, all persons on board must be evacuated immediately, and the railway station must be notified.", "ans": true}, {"id": 22507, "it": "I passaggi a livello vanno affrontati a velocità molto elevata per essere in grado di sfondare le barriere se non si è in grado di fermarsi per tempo a barriere abbassate", "en": "Level crossings must be approached at very high speed in order to be able to break through the barriers if one cannot stop in time at lowered barriers.", "ans": false}, {"id": 22512, "it": "In caso di tamponamento tra veicoli in corrispondenza di un passaggio a livello, non si devono spostare i veicoli dai binari qualora vi siano stati feriti", "en": "In the case of a collision between vehicles at a level crossing, the vehicles should not be moved from the tracks if there are any injuries.", "ans": false}, {"id": 22554, "it": "La distanza di sicurezza non deve essere rispettata a velocità di marcia inferiori ai 50 km/h", "en": "The safe distance does not need to be observed at speeds below 50 km/h.", "ans": false}, {"id": 22592, "it": "La distrazione del conducente non è determinata dall'uso del \"cellulare\"", "en": "The distraction of the driver is not determined by the use of the \"mobile phone\"", "ans": false}, {"id": 22680, "it": "Chi guida un veicolo, anche se ad elevate prestazioni, non deve, comunque, superare i limiti di velocità previsti dalla legge", "en": "A driver of a vehicle, even if it is a high-performance one, must not exceed the speed limits set by law.", "ans": true}, {"id": 22696, "it": "Il carico sugli autoveicoli non deve superare la portata indicata nella carta di circolazione", "en": "The load on motor vehicles must not exceed the capacity indicated in the registration certificate.", "ans": true}, {"id": 22707, "it": "L'uso corretto della strada comporta che ci si affretti a sgombrare l'incrocio, quando compaia sul semaforo la luce gialla fissa e non si è in grado di arrestare il veicolo in sicurezza prima della striscia di arresto", "en": "The correct use of the road requires that one hastens to clear the intersection when the fixed yellow light appears at the traffic light and one is unable to stop the vehicle safely before the stop line.", "ans": true}, {"id": 22721, "it": "Giungendo ad un incrocio, se non si è in grado di capire subito chi ha la precedenza, bisogna procedere con prudenza e accortezza", "en": "Upon reaching an intersection, if one is unable to immediately determine who has the right of way, one must proceed with caution and care.", "ans": true}, {"id": 22722, "it": "Giungendo ad un incrocio, se non si è in grado di capire subito chi ha la precedenza, si può proseguire senza rallentare, se si sceglie di andare diritto", "en": "Upon reaching an intersection, if one is unable to immediately determine who has the right of way, one may continue without slowing down if choosing to go straight.", "ans": false}, {"id": 22726, "it": "Quando, giunti in prossimità di un incrocio, ci accorgiamo di aver sbagliato la corsia di preselezione dobbiamo accostarci sulla destra e fermarci finché non sia passata la colonna dei veicoli che seguono", "en": "When we approach an intersection and realize we have chosen the wrong pre-selection lane, we must pull over to the right and stop until the column of vehicles following has passed.", "ans": false}, {"id": 22751, "it": "Quando ad un incrocio urbano, al segnale di via libera, il veicolo che precede tarda a riprendere la marcia, non si deve superarlo con manovre pericolose", "en": "When at an urban intersection, if the preceding vehicle is slow to resume motion at the green light, one should not overtake it with dangerous maneuvers.", "ans": true}, {"id": 22786, "it": "La svolta a destra si effettua senza mai dare la precedenza ai pedoni, se il semaforo ha la luce verde accesa", "en": "The right turn is made without ever yielding to pedestrians if the traffic light is green.", "ans": false}, {"id": 22799, "it": "Chi intende cambiare corsia non deve creare intralcio o pericolo per chi percorre la corsia che vuole impegnare", "en": "Anyone intending to change lanes must not create obstruction or danger for those traveling in the lane they wish to enter.", "ans": true}, {"id": 22800, "it": "Chi intende cambiare corsia non deve azionare l'indicatore di direzione se la strada è libera", "en": "Anyone intending to change lanes must not activate the turn signal if the road is clear.", "ans": false}, {"id": 22877, "it": "La marcia per file parallele non è ammessa se la strada è a una sola carreggiata", "en": "Traveling in parallel lanes is not allowed if the road has a single roadway.", "ans": false}, {"id": 22899, "it": "In vicinanza o in corrispondenza degli incroci non è consentito procedere a zig zag, anche se le corsie direzionali sono segnate da strisce discontinue (tratteggiate)", "en": "Near or at intersections, zigzag driving is not permitted, even if the directional lanes are marked with broken (dashed) lines.", "ans": true}, {"id": 22904, "it": "In vicinanza o in corrispondenza degli incroci non è consentito sorpassare una bicicletta, se si deve occupare la corsia opposta di marcia", "en": "In the vicinity or at intersections, it is not permitted to overtake a bicycle if it requires occupying the opposite lane of travel.", "ans": true}, {"id": 22909, "it": "In vicinanza o in corrispondenza degli incroci non si deve rallentare se il semaforo è a luce gialla lampeggiante", "en": "In the vicinity or at intersections, one must not slow down if the traffic light is flashing yellow.", "ans": false}, {"id": 22910, "it": "In vicinanza o in corrispondenza degli incroci extraurbani non è consentito azionare i dispositivi di segnalazione acustica (clacson o trombe)", "en": "In the vicinity or at the intersections of extra-urban areas, it is not permitted to activate acoustic signaling devices (horns or trumpets)", "ans": false}, {"id": 22931, "it": "Il conducente che intende effettuare l'inversione di marcia su una strada a doppio senso non deve creare pericolo o intralcio agli altri utenti della strada", "en": "The driver intending to make a U-turn on a two-way street must not create danger or obstruction for other road users.", "ans": true}, {"id": 22937, "it": "Nelle strade a doppio senso di circolazione non è consentito effettuare l'inversione del senso di marcia in vicinanza o in corrispondenza di curve", "en": "On two-way roads, making a U-turn is not permitted near or at curves.", "ans": true}, {"id": 22938, "it": "L'inversione del senso di marcia non è consentita in vicinanza o in corrispondenza degli incroci", "en": "Making a U-turn is not allowed near or at intersections.", "ans": true}, {"id": 22939, "it": "Nelle strade a doppio senso non è consentito effettuare l'inversione del senso di marcia in tutti i casi di scarsa visibilità", "en": "On two-way roads, making a U-turn is not permitted in all cases of poor visibility.", "ans": true}, {"id": 22940, "it": "Nelle strade a doppio senso di circolazione non è consentito effettuare l'inversione del senso di marcia in vicinanza o in corrispondenza di dossi", "en": "On two-way roads, making a U-turn is not allowed near or at bumps.", "ans": true}, {"id": 22950, "it": "Se in una strada a forte pendenza, il passaggio tra veicoli non è facilmente possibile, in genere spetta al conducente che procede in discesa arrestarsi ed eventualmente fare retromarcia", "en": "If on a steep road, the passage between vehicles is not easily possible, it is generally the responsibility of the driver proceeding downhill to stop and possibly reverse.", "ans": true}, {"id": 22957, "it": "Se in una strada a forte pendenza, il passaggio tra veicoli non è facilmente possibile, in genere spetta al conducente che procede in discesa arrestarsi ed eventualmente fare retromarcia", "en": "If on a steep road, the passage between vehicles is not easily possible, it is generally the responsibility of the driver proceeding downhill to stop and possibly reverse.", "ans": true}, {"id": 22960, "it": "In presenza del segnale di STOP non occorre arrestarsi, se non vi è la linea trasversale di arresto e non si vedono sopraggiungere veicoli", "en": "In the presence of the STOP sign, one does not need to stop if there is no stop line and no vehicles are approaching.", "ans": false}, {"id": 22961, "it": "Se in una strada a forte pendenza, il passaggio tra veicoli non è facilmente possibile, in genere spetta al conducente che procede in salita arrestarsi", "en": "If on a steep road, when passing between vehicles is not easily possible, it is generally the responsibility of the driver proceeding uphill to stop.", "ans": false}, {"id": 22978, "it": "Il conducente di un autoveicolo che parte dal margine della carreggiata e si immette nel flusso della circolazione deve allacciare la cintura di sicurezza salvo che non sia esentato", "en": "The driver of a motor vehicle starting from the edge of the roadway and merging into the flow of traffic must fasten the seatbelt unless exempted.", "ans": true}, {"id": 23013, "it": "La posizione antiriflesso dello specchio retrovisore centrale di un autoveicolo non deve essere utilizzata di notte", "en": "The anti-glare position of the central rearview mirror of a motor vehicle should not be used at night.", "ans": false}, {"id": 23014, "it": "La posizione antiriflesso dello specchio retrovisore centrale di un autoveicolo non può essere utilizzata quando si circola su autostrada", "en": "The anti-glare position of the central rearview mirror of a motor vehicle cannot be used when driving on the highway.", "ans": false}, {"id": 23019, "it": "Durante una manovra di parcheggio in retromarcia, non è necessario utilizzare gli specchi retrovisori se il veicolo è dotato di sensori di parcheggio", "en": "During a reverse parking maneuver, it is not necessary to use the rearview mirrors if the vehicle is equipped with parking sensors.", "ans": false}, {"id": 23036, "it": "Nei centri abitati non è necessario utilizzare gli specchi retrovisori", "en": "In populated areas, it is not necessary to use the rearview mirrors", "ans": false}, {"id": 23477, "it": "La manovra di sorpasso non va effettuata se la carreggiata non è sufficientemente larga", "en": "The overtaking maneuver should not be performed if the roadway is not sufficiently wide", "ans": true}, {"id": 23483, "it": "Dopo aver eseguito una prima manovra di sorpasso, in strade ad almeno due corsie per senso di marcia, è possibile eseguirne un' altra senza rientrare a destra, se non si crea intralcio", "en": "After executing an initial overtaking maneuver, on roads with at least two lanes in each direction, it is possible to execute another without returning to the right, provided it does not create an obstruction.", "ans": true}, {"id": 23488, "it": "Se il tram o il filobus sono fermi la manovra di sorpasso non può effettuarsi a destra se manca il salvagente", "en": "If the tram or trolleybus is stationary, the overtaking maneuver cannot be performed to the right if there is no safety zone.", "ans": true}, {"id": 23507, "it": "E' consentito il sorpasso in corrispondenza delle intersezioni se si supera un veicolo a due ruote non a motore e non si invade il lato riservato al senso opposto", "en": "Overtaking is permitted at intersections if you are passing a non-motorized two-wheeled vehicle and do not invade the lane reserved for oncoming traffic.", "ans": true}, {"id": 23565, "it": "Non si può sorpassare in corrispondenza dei dossi su carreggiata a senso unico a due corsie", "en": "You can overtake in correspondence of the bumps on the track one-way and two lanes", "ans": false}, {"id": 23566, "it": "Non si può sorpassare un veicolo che abbia segnalato l'intenzione di accostarsi al margine destro della carreggiata", "en": "You can overtake a vehicle that has reported the intention to approach the right-hand edge of the roadway", "ans": false}, {"id": 23567, "it": "Non si può sorpassare in corrispondenza dell'uscita di un pubblico parcheggio", "en": "You can overtake at the exit of a public parking", "ans": false}, {"id": 23569, "it": "Non si può sorpassare sulla destra il tram che marcia al centro della carreggiata", "en": "You can overtake on the right the trams that march to the middle of the road", "ans": false}, {"id": 23596, "it": "Per effettuare il sorpasso bisogna considerare che un veicolo trainante un caravan non può mai essere superato in una discesa a forte pendenza", "en": "To make the move, you should consider that a towing vehicle, a caravan, it can never be passed down a steep slope", "ans": false}, {"id": 23597, "it": "E' consentito sorpassare un'auto della Polizia, se non è in servizio di emergenza e non vi sono altri tipi di impedimenti", "en": "It is allowed to overtake a Police car, if it is not in the emergency service and there are other types of impediments", "ans": true}, {"id": 23600, "it": "Se si viene sorpassati ed avviene un incidente, si può avere una parte di responsabilità, se non si è fatto il possibile per facilitare la manovra di sorpasso", "en": "If you are overtaken, and this occurs in an accident, you can have a part of responsibility, if you are not made to facilitate the overtaking maneuver", "ans": true}, {"id": 23635, "it": "Prima di iniziare a guidare un veicolo, bisogna controllare che non sia compromessa la visibilità posteriore e laterale, per la presenza di passeggeri o per il carico mal posizionato", "en": "Before starting to drive a vehicle, you need to check that degradation of the visibility to the rear and side, for the presence of passengers or the load is badly positioned", "ans": true}, {"id": 23650, "it": "La fermata non deve arrecare intralcio alla circolazione", "en": "The stop must not cause any disturbance to the circulation", "ans": true}, {"id": 23651, "it": "Durante la fermata il conducente non deve impedire con il proprio autoveicolo il normale flusso del traffico", "en": "During the stop, the driver should not prevent the vehicle the normal flow of traffic", "ans": true}, {"id": 23655, "it": "Non è consentito fermarsi per chiedere informazioni agli agenti del traffico, quando ciò possa causare intralcio o rallentamento alla circolazione", "en": "It is not allowed to stop and ask for information to the agents of the traffic, where it is likely to cause disruption or slowdown of the circulation", "ans": true}, {"id": 23662, "it": "Fuori dei centri abitati, se non è possibile collocare il veicolo fuori della carreggiata, il conducente deve effettuare la fermata il più vicino possibile al margine destro della carreggiata", "en": "Outside of the towns and villages, if it is not possible to place the vehicle out of the roadway, the driver must stop as near as possible to the right edge of the roadway", "ans": true}, {"id": 23703, "it": "Durante la sosta il conducente non può allontanarsi dal veicolo per più di tre ore", "en": "During the stop, the driver may not leave the vehicle for more than three hours", "ans": false}, {"id": 23718, "it": "Fuori dei centri abitati, in caso di impossibilità di collocare il veicolo fuori della carreggiata, il conducente non deve effettuare la sosta", "en": "Outside of the towns and villages, in the case of inability to place the vehicle out of the roadway, the driver should not make the stop", "ans": false}, {"id": 23743, "it": "La sosta è vietata nelle curve ma, fuori dei centri abitati e sulle strade di scorrimento, non è vietata in loro prossimità", "en": "Parking is prohibited in the corners, but, outside of the towns and on the roads of the scroll, is not prohibited in their proximity", "ans": false}, {"id": 23755, "it": "La sosta è vietata a meno di 15 metri dal segnale di fermata di autobus, filobus e veicoli circolanti su rotaia, qualora gli spazi di stazionamento non siano delimitati", "en": "Parking is prohibited at least 15 metres from the signal of the stop of buses, trolley-buses and vehicles operating on the rail, and if the spaces of parking are not delimited", "ans": true}, {"id": 23764, "it": "La sosta è consentita negli spazi riservati allo stazionamento dei taxi solo se non si protrae per lungo tempo", "en": "The parking is available in reserved spaces in the parking of the taxi only if it continues for a long time", "ans": false}, {"id": 23776, "it": "Nei centri abitati il conducente non deve lasciare in sosta un rimorchio staccato dalla motrice, salvo diversa segnalazione", "en": "In towns and villages, the driver must not leave a parked a trailer detached from the tractor, unless otherwise signaling", "ans": true}, {"id": 23777, "it": "Nel caso in cui la sosta è espressamente vietata da una norma del codice stradale, l'osservanza di tale divieto non è condizionata dalla presenza di cartelli segnaletici", "en": "In the case where the stop is expressly prohibited by a provision of the highway code, the observance of this prohibition is not conditioned by the presence of signs", "ans": true}, {"id": 23781, "it": "La sosta, a meno di 15 metri dal segnale di fermata degli autobus, qualora gli spazi di fermata non siano delimitati, comporta tra l'altro, la sottrazione di punti dalla patente", "en": "To stop, at least 15 metres from the signal bus, if the spaces of the stop are not delimited, involves, among other things, the subtraction of points on your license", "ans": true}, {"id": 23786, "it": "La sosta a meno di 15 metri dal segnale di fermata autobus, qualora gli spazi di stazionamento non siano delimitati, è consentita azionando la segnalazione luminosa di pericolo (quattro frecce lampeggianti simultaneamente)", "en": "The stop at least 15 metres from the signal of the bus stop, where space parking are not delimited, it is allowed while operating the hazard warning signal (four flashing arrows at the same time)", "ans": false}, {"id": 23811, "it": "In caso di ingombro della carreggiata per avaria del veicolo, il conducente deve spingere il veicolo stesso fuori della carreggiata o, se ciò non è possibile, collocarlo sul margine destro della carreggiata", "en": "In the case of a boundary of a carriageway breakdown of the vehicle, the driver must push the vehicle out of the roadway or, if this is not possible, place it on the right edge of the roadway", "ans": true}, {"id": 23813, "it": "In caso di ingombro della carreggiata per avaria del veicolo, il conducente non è tenuto a spostarlo, in attesa dei soccorsi, se il traffico è scarso", "en": "In the case of a boundary of a carriageway breakdown of the vehicle, the driver is not required to move it, while waiting to be rescued, if the traffic is low", "ans": false}, {"id": 23816, "it": "Su strada extraurbana, nel caso di incidente che provochi l'ingombro della carreggiata per la presenza di veicoli danneggiati che non è possibile rimuovere, il conducente o i passeggeri devono presegnalare la zona mediante il segnale triangolare mobile di pericolo", "en": "On a country road, in the event of an accident that results in the footprint of the roadway for the presence of damaged vehicles that can't remove the driver or passengers must presegnalare the zone using the signal triangular mobile danger", "ans": true}, {"id": 23817, "it": "Nel caso di ingombro della carreggiata per avaria del veicolo che non è possibile spostare , il conducente deve informare l'organo di polizia, senza dover opportunamente presegnalare la zona.", "en": "In the case of the footprint of the roadway to breakdown of the vehicle that the move is not possible , the driver must inform the law-enforcement agency, without the need to properly presegnalare the area.", "ans": false}, {"id": 23821, "it": "Chiunque non abbia potuto evitare la caduta o lo spargimento di materie pericolose, deve, tra l'altro, eseguire segnali manuali per impedire il transito dei veicoli dalla parte dove non è stato posto il segnale mobile di pericolo", "en": "Anyone who has not been able to avoid the fall or the spilling of hazardous materials, must, among other things, perform hand signals in order to prevent the transit of vehicles from the part where there is the signal of danger", "ans": true}, {"id": 23828, "it": "Fuori dei centri abitati, è obbligatorio anche di giorno presegnalare un veicolo fermo sulla carreggiata mediante il segnale triangolare di pericolo quando non può essere visto nettamente a 100 metri di distanza", "en": "Outside of the towns and villages, it is also mandatory to day presegnalare a vehicle stopped on the roadway by means of the signal is triangular in danger when he can't be seen clearly in the 100 metres away", "ans": true}, {"id": 23829, "it": "Fuori dei centri abitati è obbligatorio, anche di giorno, presegnalare un carico accidentalmente caduto sulla carreggiata mediante il segnale triangolare mobile di pericolo, quando l'ingombro non può essere visto nettamente a 100 metri di distanza", "en": "Out of the centers is mandatory, even in the day, presegnalare a load accidentally fallen on the roadway by means of the signal is triangular in mobile of danger, when the boundary can not be seen clearly to 100 metres away", "ans": true}, {"id": 23835, "it": "Il triangolo mobile di pericolo deve essere obbligatoriamente usato per segnalare il veicolo fermo per avaria di notte, se l'ostacolo non è visibile ad almeno 150 metri di distanza", "en": "The triangle mobile hazard must be used to report the vehicle is stationary for the failure of the night, if the obstacle is not visible to at least 150 metres away", "ans": false}, {"id": 23836, "it": "Fuori dei centri abitati, è facoltativo presegnalare, anche di giorno, un carico accidentalmente caduto sulla carreggiata mediante il segnale di pericolo, quando non può essere visto nettamente a 100 metri di distanza", "en": "Outside of the towns, is optional presegnalare, even in the day, a load accidentally fallen on the roadway by means of the signal of danger, when it can not be seen clearly to 100 metres away", "ans": false}, {"id": 23850, "it": "Durante le operazioni di presegnalazione con il segnale mobile di pericolo il conducente non deve indossare il giubbotto ad alta visibilità se si trova sulle corsie di emergenza o sulle piazzole di sosta", "en": "During the operation of the presegnalazione with the mobile signal of danger, the driver must not wear the vest high visibility if it is located on the emergency lanes or parking spaces", "ans": false}, {"id": 23869, "it": "Nelle aree di servizio e nelle aree di sosta delle autostrade e delle strade extraurbane principali gli animali non possono circolare neppure se debitamente custoditi", "en": "Service areas and rest areas of highways and main roads, the animals can not move even if duly kept", "ans": false}, {"id": 23873, "it": "Nelle aree di servizio delle autostrade, il conducente non deve lasciare in sosta il veicolo per più di 24 ore", "en": "In the areas of service of highways, the driver must not leave a parked vehicle for more than 24 hours", "ans": true}, {"id": 23892, "it": "In caso di ingorgo su strade extraurbane principali o autostrade, se la corsia di emergenza manca o non è sufficiente alla circolazione dei veicoli di polizia o di soccorso, il conducente del veicolo che occupa la prima corsia di destra deve disporsi il più vicino possibile alla striscia di sinistra", "en": "In the case of a traffic jam on main roads or highways, if the emergency lane is missing or is not sufficient for the movement of vehicles of the police or emergency services, the driver of the vehicle which occupies the first lane on the right should be disposed as close as possible to the strip of the left", "ans": true}, {"id": 23895, "it": "Sulle autostrade e sulle strade extraurbane principali se il traffico non è intenso il conducente non ha l'obbligo di servirsi degli indicatori di direzione per segnalare il cambiamento di corsia", "en": "On motorways and main roads if the traffic is not intense, the driver does not have the obligation to use the direction indicator to signal the change of lane", "ans": false}, {"id": 23900, "it": "Sulle carreggiate, sulle rampe e sugli svincoli delle autostrade la sosta di emergenza non deve superare il tempo strettamente necessario e non deve protrarsi comunque oltre tre ore", "en": "On the roadways, on the ramps and on the highway exits the parking of emergency must not exceed the time that is strictly necessary and must not extend more than three hours", "ans": true}, {"id": 23903, "it": "Sulle carreggiate, sulle rampe e sugli svincoli delle autostrade la sosta di emergenza non deve superare il tempo strettamente necessario e può protrarsi fino a 24 ore", "en": "On the roadways, on the ramps and on the highway exits the parking of emergency must not exceed the time that is strictly necessary and can last up to 24 hours", "ans": false}, {"id": 23919, "it": "Sui motocicli è vietato trasportare oggetti che non siano solidamente assicurati", "en": "Motorcycles are not permitted to carry objects that are firmly secured", "ans": true}, {"id": 23930, "it": "Il carico non deve superare il limite di sagoma stabilito per ogni tipo di veicolo", "en": "The load should not exceed the limits of the shape defined for each type of vehicle", "ans": true}, {"id": 23931, "it": "Sugli autoveicoli, il carico non può sporgere longitudinalmente dalla parte anteriore", "en": "On the vehicle, the load may not protrude longitudinally from the front", "ans": true}, {"id": 23953, "it": "Un autoveicolo può trainare un veicolo che non sia un rimorchio se questo non può più circolare per avaria o per mancanza di organi essenziali", "en": "A motor vehicle may tow a vehicle that is not a trailer if this is not circular due to a breakdown or a lack of essential organs", "ans": true}, {"id": 23957, "it": "In autostrada, un autoveicolo può trainare un veicolo che non sia un rimorchio, se questo non può più circolare per qualsiasi grave motivo", "en": "On the highway, a motor vehicle may tow a vehicle that is not a trailer, if this is not circular for any serious reason", "ans": false}, {"id": 23958, "it": "Il traino per incombente situazione di emergenza di un veicolo in avaria deve avvenire attraverso un solido collegamento, anche se non è possibile segnalarlo", "en": "The coupling to the looming disaster of a vehicle breakdown must take place through a solid connection, even if it is not possible to report it", "ans": false}, {"id": 23976, "it": "Il conducente di autoveicolo deve rispettare le norme della circolazione, ma non è tenuto a prevedere le possibili imprudenze del ciclomotorista che lo affianca sulla strada", "en": "The driver of the motor vehicle must comply with the rules of the circulation, but is not required to predict the possible indiscretions of the ciclomotorista who helped him on the road", "ans": false}, {"id": 24086, "it": "Nelle autovetture dotate di A.B.S. non è possibile agganciare un rimorchio privo di impianto frenante", "en": "In cars equipped with A. B. S. is not possible to attach a trailer without brakes", "ans": false}, {"id": 24092, "it": "Il rapporto di traino, entro i limiti di quello tecnicamente ammesso per il veicolo, non deve superare il valore di 1, nel caso di rimorchi muniti di freno di servizio e di massa fino a 3,5 tonnellate", "en": "The ratio of coupling, within the limits of the technically permissible for the vehicle, must not exceed the value of 1, in the case of trailers equipped with a service brake and a mass of up to 3.5 tonnes", "ans": true}, {"id": 24094, "it": "Quando il gancio di traino non viene utilizzato, perché non si sta trainando un rimorchio, la sua parte sporgente dalla sagoma posteriore del veicolo deve essere sfilata, smontata o ripiegata", "en": "When the hitch is not being used, because you are pulling a trailer, the part protruding from the shape of the rear of the vehicle must be removed, disassembled or folded", "ans": true}, {"id": 24101, "it": "La larghezza del rimorchio non deve superare quella del veicolo trainante", "en": "The width of the trailer does not exceed that of the towing vehicle", "ans": false}, {"id": 24102, "it": "Il rimorchio è parte integrante del veicolo a cui è stato abbinato in fase di collaudo e non può essere agganciato a un altro veicolo", "en": "The trailer is an integral part of the vehicle to which it was matched in the test phase and may not be hooked up to another vehicle", "ans": false}, {"id": 24103, "it": "Se si trainano caravan e rimorchi T.A.T.S. non è obbligatorio che il veicolo trainante sia munito di specchietto retrovisore destro", "en": "If you are pulling caravans and trailers T. A. T. S. it is not mandatory that the towing vehicle is equipped with rear-view mirror-right", "ans": false}, {"id": 24114, "it": "I rimorchi per il trasporto di cavalli (van) non possono circolare in autostrada", "en": "The trailers for the transport of horses (van) can not move on the highway", "ans": false}, {"id": 24125, "it": "Nei veicoli dotati di sensori di parcheggio non è possibile agganciare un rimorchio", "en": "In vehicles equipped with the parking sensors is not possible to attach a trailer", "ans": false}, {"id": 24137, "it": "Il conducente di un veicolo con rimorchio deve sistemare la merce trasportata in modo che, durante la marcia, non si verifichino spostamenti, rovesciamenti, cadute o sfregamenti", "en": "The driver of a vehicle / trailer combination must place the goods to be transported in such a way that, during the march, you may not experience the trips, spills, drops, or chafing", "ans": true}, {"id": 24138, "it": "In caso di prolungata inattività del rimorchio è consigliabile, se non è possibile sollevarlo da terra, aumentare la pressione di gonfiaggio degli pneumatici e cambiare periodicamente la loro superficie di appoggio, in modo da evitare la loro ovalizzazione", "en": "In case of prolonged inactivity of the trailer, it is advisable, if it is not possible to lift it from the ground, to increase the inflation pressure of the tires and periodically change their surface, so as to avoid their ovalization", "ans": true}];
-const VOCAB_FREQ = [{"it": "segnale", "en": "sign / signal", "freq": 2886}, {"it": "raffigurato", "en": "shown / depicted", "freq": 2819}, {"it": "veicolo", "en": "vehicle", "freq": 1249}, {"it": "figura", "en": "figure / picture", "freq": 1005}, {"it": "indica", "en": "indicates", "freq": 939}, {"it": "strada", "en": "road", "freq": 775}, {"it": "deve", "en": "must", "freq": 690}, {"it": "incrocio", "en": "intersection", "freq": 630}, {"it": "può", "en": "can / may", "freq": 597}, {"it": "conducente", "en": "driver", "freq": 532}, {"it": "velocità", "en": "speed", "freq": 498}, {"it": "presenza", "en": "presence", "freq": 477}, {"it": "precedenza", "en": "right of way", "freq": 463}, {"it": "preannuncia", "en": "warns of / announces", "freq": 423}, {"it": "carreggiata", "en": "carriageway", "freq": 347}, {"it": "rappresentato", "en": "represented / shown", "freq": 336}, {"it": "transito", "en": "transit / passage", "freq": 333}, {"it": "posto", "en": "placed", "freq": 326}, {"it": "destra", "en": "right", "freq": 323}, {"it": "sosta", "en": "parking / stopping", "freq": 322}, {"it": "senso", "en": "direction", "freq": 316}, {"it": "circolazione", "en": "traffic / circulation", "freq": 316}, {"it": "patente", "en": "driving licence", "freq": 294}, {"it": "pannello", "en": "panel (sign)", "freq": 291}, {"it": "bisogna", "en": "it is necessary", "freq": 282}, {"it": "consentito", "en": "allowed", "freq": 274}, {"it": "guida", "en": "driving", "freq": 264}, {"it": "corsia", "en": "lane", "freq": 259}, {"it": "sinistra", "en": "left", "freq": 258}, {"it": "marcia", "en": "gear / travel", "freq": 255}, {"it": "consente", "en": "allows", "freq": 239}, {"it": "solo", "en": "only", "freq": 235}, {"it": "sorpasso", "en": "overtaking", "freq": 211}, {"it": "pericolo", "en": "danger", "freq": 210}, {"it": "distanza", "en": "distance", "freq": 207}, {"it": "sicurezza", "en": "safety", "freq": 207}, {"it": "dare", "en": "to give", "freq": 205}, {"it": "semaforo", "en": "traffic light", "freq": 204}, {"it": "vieta", "en": "prohibits", "freq": 203}, {"it": "possono", "en": "they can", "freq": 202}, {"it": "motore", "en": "engine", "freq": 201}, {"it": "integrativo", "en": "supplementary", "freq": 190}, {"it": "luce", "en": "light", "freq": 177}, {"it": "durante", "en": "during", "freq": 171}, {"it": "svoltare", "en": "to turn", "freq": 166}, {"it": "dopo", "en": "after", "freq": 163}, {"it": "stradale", "en": "road (adj.)", "freq": 154}, {"it": "possibile", "en": "possible", "freq": 149}, {"it": "fermata", "en": "stop (bus stop)", "freq": 148}, {"it": "traffico", "en": "traffic", "freq": 147}, {"it": "carico", "en": "load / cargo", "freq": 145}, {"it": "senza", "en": "without", "freq": 141}, {"it": "extraurbane", "en": "outside town (roads)", "freq": 140}, {"it": "norme", "en": "rules / norms", "freq": 140}, {"it": "pedoni", "en": "pedestrians", "freq": 138}, {"it": "massa", "en": "mass / weight", "freq": 138}, {"it": "superiore", "en": "greater / higher", "freq": 136}, {"it": "obbligatorio", "en": "mandatory", "freq": 134}, {"it": "obbligo", "en": "obligation", "freq": 132}, {"it": "limite", "en": "limit", "freq": 131}, {"it": "devono", "en": "they must", "freq": 130}, {"it": "direzione", "en": "direction", "freq": 130}, {"it": "striscia", "en": "line / stripe", "freq": 129}, {"it": "massimo", "en": "maximum", "freq": 129}, {"it": "tratto", "en": "stretch (of road)", "freq": 129}, {"it": "metri", "en": "metres", "freq": 128}, {"it": "vietato", "en": "forbidden", "freq": 125}, {"it": "occorre", "en": "it is necessary", "freq": 123}, {"it": "sempre", "en": "always", "freq": 120}, {"it": "mai", "en": "never", "freq": 100}, {"it": "purché", "en": "as long as", "freq": 50}, {"it": "attraversamento", "en": "crossing", "freq": 90}, {"it": "rallentare", "en": "to slow down", "freq": 85}, {"it": "frenare", "en": "to brake", "freq": 80}, {"it": "cintura", "en": "seatbelt", "freq": 75}, {"it": "casco", "en": "helmet", "freq": 70}, {"it": "rimorchio", "en": "trailer", "freq": 65}];
-
-const HACKS = [
-  {num:1,title:'"Non" + safe thing = FALSO',desc:'When a question says "non è obbligatorio / consentito / necessario" about something that clearly should be required (seatbelts, lights, signals), the answer is FALSO.',ex:'"Non è obbligatorio usare le cinture di sicurezza" → FALSO',verdict:'f'},
-  {num:2,title:'"Sempre" and "mai" are red flags',desc:'Absolutes are usually FALSE — traffic law almost always has exceptions. Be suspicious of sempre and mai. (But note: some absolute prohibitions ARE true, e.g. overtaking on bends.)',ex:'"Si può sempre sorpassare in rettilineo" → FALSO',verdict:'f'},
-  {num:3,title:'Safety promotes = VERO, danger allows = FALSO',desc:'Statements promoting caution (slow down, yield, keep distance) are almost always TRUE. Statements permitting risky behaviour are almost always FALSE.',ex:'"In caso di nebbia bisogna rallentare" → VERO',verdict:'both'},
-  {num:4,title:'"È vietato" statements are usually TRUE',desc:'Questions stating something is prohibited are almost always TRUE — the prohibition is real.',ex:'"È vietato parcheggiare sulle strisce pedonali" → VERO',verdict:'v'},
-  {num:5,title:'"Solo" (only) is almost always a trap',desc:'When a rule applies "solo" in one situation, it almost always applies MORE broadly. The restriction is the false part.',ex:'"Il casco è obbligatorio solo in autostrada" → FALSO',verdict:'f'},
-  {num:6,title:'Neopatentati: alcohol = zero, speed = reduced',desc:'New drivers: 0.0 g/L alcohol, 100 km/h motorway max, 90 km/h road max for 3 years. Any question suggesting otherwise is FALSO.',ex:'"I neopatentati possono avere 0.5 g/L" → FALSO',verdict:'f'},
-  {num:7,title:'Pedestrians and cyclists have priority',desc:'Yielding to pedestrians at crossings = TRUE. Ignoring them or claiming priority over them = FALSE.',ex:'"Dare precedenza ai pedoni sulle strisce" → VERO',verdict:'v'},
-  {num:8,title:'Sign shapes: one key, many questions',desc:'Red triangle = warning. Red circle = prohibition. Blue circle = obligation. Blue rectangle = information. Identify shape first, then all questions about that sign become easy.',ex:'"Il segnale (triangolo) indica pericolo" → VERO',verdict:'both'},
-  {num:9,title:'Motorway = maximum restrictions',desc:'U-turns, reversing, stopping on carriageway, pedestrians — all forbidden on autostrada. Anything relaxed on motorways is FALSE.',ex:'"In autostrada è consentita l\'inversione di marcia" → FALSO',verdict:'f'},
-  {num:10,title:'Roundabout: inside has priority',desc:'Vehicles already IN the rotatoria have right of way. Entering vehicles must yield.',ex:'"I veicoli che entrano hanno la precedenza" → FALSO',verdict:'f'}
+"use strict";
+/* ================================================================
+   DATA — the high-value exam vocabulary, organised into units.
+   cls: "trap"   = absolute words that usually mark a FALSO statement
+        "safe"   = exception/qualifier words that usually mark a VERO
+================================================================ */
+const UNITS = [
+{
+  id:"trap", title:"Parole Trappola", sub:"Trap words", sign:"triangle", glyph:"!",
+  desc:"Absolute words. When a statement says always, never, only, all — it is very often FALSO.",
+  words:[
+    {it:"sempre", en:"always", cls:"trap"},
+    {it:"mai", en:"never", cls:"trap"},
+    {it:"solo", en:"only", cls:"trap"},
+    {it:"soltanto", en:"only / solely", cls:"trap"},
+    {it:"tutti", en:"all / everyone", cls:"trap"},
+    {it:"nessuno", en:"no one / none", cls:"trap"},
+    {it:"ogni", en:"every", cls:"trap"},
+    {it:"qualsiasi", en:"any / whatever", cls:"trap"},
+    {it:"esclusivamente", en:"exclusively", cls:"trap"},
+    {it:"in ogni caso", en:"in any case", cls:"trap"},
+    {it:"comunque", en:"in any case / anyway", cls:"trap"},
+    {it:"indifferentemente", en:"either way / indifferently", cls:"trap"},
+    {it:"limitatamente", en:"only / limited to", cls:"trap"},
+  ],
+  sentences:[
+    {it:"E' <mark>sempre</mark> consentito superare un veicolo a due ruote", en:"It is always permitted to overtake a two-wheeled vehicle", ans:false,
+     why:"\u201cSempre\u201d + a permission = classic trap. Overtaking is never allowed \u201calways\u201d — it depends on conditions. FALSO."},
+    {it:"La sosta e la fermata sono <mark>sempre</mark> vietate sugli attraversamenti pedonali", en:"Parking and stopping are always prohibited on pedestrian crossings", ans:true,
+     why:"Careful! \u201cSempre\u201d + a prohibition on something obviously dangerous is often VERO. The trap-word rule is a hint, not a law."},
+    {it:"In autostrada si può sorpassare <mark>indifferentemente</mark> a destra e a sinistra", en:"On the motorway you can overtake on the right or left indifferently", ans:false,
+     why:"\u201cIndifferentemente\u201d (either way, no rule) almost always marks a FALSO. You overtake on the left."},
+    {it:"La fermata è vietata <mark>limitatamente</mark> alle ore di esercizio, in corrispondenza dei distributori di carburante", en:"Stopping is prohibited only during operating hours, near fuel stations", ans:false,
+     why:"\u201cLimitatamente\u201d = \u201conly\u201d in disguise. Restricting a rule that is actually broader → FALSO."},
+  ]
+},
+{
+  id:"safe", title:"Salvagenti", sub:"Exception words", sign:"circle-blue", glyph:"S",
+  desc:"Qualifier words that add nuance — salvo, purché, tranne. Statements with these are often VERO (but watch purché in permissions!).",
+  words:[
+    {it:"salvo", en:"except / unless", cls:"safe"},
+    {it:"tranne", en:"except", cls:"safe"},
+    {it:"purché", en:"provided that", cls:"safe"},
+    {it:"a meno che", en:"unless", cls:"safe"},
+    {it:"qualora", en:"if / in case", cls:"safe"},
+    {it:"eccetto", en:"except", cls:"safe"},
+    {it:"anche", en:"also / even", cls:"safe"},
+    {it:"almeno", en:"at least", cls:"safe"},
+    {it:"di norma", en:"as a rule", cls:"safe"},
+    {it:"in genere", en:"generally", cls:"safe"},
+    {it:"se possibile", en:"if possible", cls:"safe"},
+    {it:"talvolta", en:"sometimes", cls:"safe"},
+  ],
+  sentences:[
+    {it:"La sosta è vietata sulle banchine, <mark>salvo</mark> diversa segnalazione", en:"Parking is prohibited on the shoulders, unless otherwise indicated", ans:true,
+     why:"\u201cSalvo diversa segnalazione\u201d (unless signs say otherwise) is how real rules are written. VERO."},
+    {it:"La fermata è consentita sulle corsie di accelerazione, <mark>purché</mark> brevissima", en:"Stopping is permitted on acceleration lanes, provided it is very brief", ans:false,
+     why:"The big exception to the rule: \u201cpurché\u201d used to soften a forbidden action is a trap. Stopping on acceleration lanes is never OK. FALSO."},
+    {it:"E' consentito il sorpasso sulle intersezioni <mark>purché</mark> non provenga nessuno dalla destra", en:"Overtaking is permitted at intersections provided no one comes from the right", ans:false,
+     why:"Same trap: \u201cpurché\u201d cannot make a forbidden manoeuvre legal. Overtaking at intersections is prohibited. FALSO."},
+    {it:"E' consentito sorpassare un'auto della Polizia, <mark>se</mark> non è in servizio di emergenza e non vi sono altri tipi di impedimenti", en:"It is permitted to overtake a police car if it is not on emergency duty and there are no other impediments", ans:true,
+     why:"A reasonable condition on a normal action → VERO. Police cars are ordinary traffic when not on duty."},
+  ]
+},
+{
+  id:"verbs", title:"Verbi Chiave", sub:"Key verbs", sign:"circle", glyph:"V",
+  desc:"Every question hinges on one of these: prohibited, permitted, obligatory, must, may.",
+  words:[
+    {it:"è vietato", en:"it is prohibited"},
+    {it:"è consentito", en:"it is permitted"},
+    {it:"è obbligatorio", en:"it is obligatory"},
+    {it:"deve", en:"must"},
+    {it:"può", en:"can / may"},
+    {it:"occorre", en:"it is necessary"},
+    {it:"bisogna", en:"one must"},
+    {it:"comporta", en:"entails / involves"},
+    {it:"consente", en:"allows"},
+    {it:"vieta", en:"prohibits"},
+    {it:"prescrive", en:"prescribes / requires"},
+    {it:"preavvisa", en:"gives advance warning of"},
+    {it:"indica", en:"indicates"},
+  ],
+  sentences:[
+    {it:"Il segnale DIVIETO DI SOSTA <mark>vieta</mark> la sosta ma <mark>consente</mark> la fermata", en:"The NO PARKING sign prohibits parking but allows brief stopping", ans:true,
+     why:"Divieto di sosta bans sosta (parking) only. Fermata (a brief stop) stays legal. Know the vieta/consente pair."},
+    {it:"E' <mark>vietato</mark> il sorpasso nelle strade a senso unico", en:"Overtaking is prohibited on one-way streets", ans:false,
+     why:"Nothing forbids overtaking on one-way streets. A made-up prohibition → FALSO."},
+  ]
+},
+{
+  id:"road", title:"La Strada", sub:"Road anatomy", sign:"square", glyph:"⇉",
+  desc:"The parts of the road. Carreggiata vs corsia vs banchina trips everyone up.",
+  words:[
+    {it:"la carreggiata", en:"the roadway (whole driving surface)"},
+    {it:"la corsia", en:"the lane"},
+    {it:"la banchina", en:"the shoulder / verge"},
+    {it:"il marciapiede", en:"the sidewalk"},
+    {it:"l'incrocio", en:"the crossroads"},
+    {it:"l'intersezione", en:"the intersection"},
+    {it:"l'attraversamento pedonale", en:"the pedestrian crossing"},
+    {it:"il passaggio a livello", en:"the level crossing"},
+    {it:"senso unico", en:"one-way"},
+    {it:"doppio senso", en:"two-way"},
+    {it:"il centro abitato", en:"the built-up area / town"},
+    {it:"lo spartitraffico", en:"the traffic divider / median"},
+    {it:"il dosso", en:"the crest / bump"},
+    {it:"la curva", en:"the bend"},
+  ],
+  sentences:[
+    {it:"Nei <mark>centri abitati</mark>, la fermata e la sosta sono vietate in corrispondenza delle aree di <mark>intersezione</mark> e in prossimità di esse a meno di 5 metri, salvo diversa segnalazione", en:"In built-up areas, stopping and parking are prohibited at intersections and within 5 metres of them, unless otherwise indicated", ans:true,
+     why:"The famous 5-metre rule. Note the shape: rule + distance + \u201csalvo\u201d clause = usually VERO."},
+  ]
+},
+{
+  id:"moves", title:"Le Manovre", sub:"Manoeuvres", sign:"circle", glyph:"↰",
+  desc:"Sosta vs fermata vs arresto is a guaranteed exam topic. Learn the differences cold.",
+  words:[
+    {it:"il sorpasso", en:"overtaking"},
+    {it:"la sosta", en:"parking (leaving the car)"},
+    {it:"la fermata", en:"the brief stop (driver stays)"},
+    {it:"l'arresto", en:"the halt (forced by traffic)"},
+    {it:"la svolta", en:"the turn"},
+    {it:"la precedenza", en:"the right of way"},
+    {it:"dare la precedenza", en:"to give way / yield"},
+    {it:"la retromarcia", en:"reversing"},
+    {it:"l'inversione di marcia", en:"the U-turn"},
+    {it:"il cambio di corsia", en:"the lane change"},
+    {it:"superare", en:"to overtake / pass"},
+    {it:"immettersi", en:"to merge / enter"},
+  ],
+  sentences:[
+    {it:"Il conducente del veicolo da sorpassare ha l'obbligo di ridurre <mark>sempre</mark> la propria velocità", en:"The driver being overtaken must always reduce their speed", ans:false,
+     why:"You only slow down if needed to help the overtake finish safely — not \u201csempre\u201d. FALSO."},
+  ]
+},
+{
+  id:"speed", title:"Velocità e Spazi", sub:"Speed & distance", sign:"circle", glyph:"50",
+  desc:"Speed, braking, reaction time, and the safe distance — the physics unit.",
+  words:[
+    {it:"la velocità", en:"the speed"},
+    {it:"rallentare", en:"to slow down"},
+    {it:"moderare la velocità", en:"to reduce speed"},
+    {it:"la distanza di sicurezza", en:"the safe following distance"},
+    {it:"lo spazio di frenatura", en:"the braking distance"},
+    {it:"il tempo di reazione", en:"the reaction time"},
+    {it:"frenare", en:"to brake"},
+    {it:"l'aderenza", en:"the grip / traction"},
+    {it:"la visibilità", en:"the visibility"},
+    {it:"lo slittamento", en:"the skidding"},
+    {it:"aumentare", en:"to increase"},
+    {it:"diminuire", en:"to decrease"},
+  ],
+  sentences:[
+    {it:"Lo spazio necessario per il sorpasso è <mark>indipendente</mark> dalla lunghezza dei veicoli", en:"The space needed for overtaking is independent of vehicle length", ans:false,
+     why:"Longer vehicle = longer overtake. \u201cIndipendente da\u201d (doesn't depend on) is a frequent FALSO marker — physics almost always depends on these factors."},
+  ]
+},
+{
+  id:"people", title:"Persone e Veicoli", sub:"People & vehicles", sign:"square", glyph:"⛟",
+  desc:"Who and what is on the road — the nouns that anchor every question.",
+  words:[
+    {it:"il conducente", en:"the driver"},
+    {it:"il pedone", en:"the pedestrian"},
+    {it:"il veicolo", en:"the vehicle"},
+    {it:"l'autovettura", en:"the car"},
+    {it:"il ciclomotore", en:"the moped"},
+    {it:"il motociclo", en:"the motorcycle"},
+    {it:"il velocipede", en:"the bicycle"},
+    {it:"l'autocarro", en:"the truck"},
+    {it:"il rimorchio", en:"the trailer"},
+    {it:"il carico", en:"the load / cargo"},
+    {it:"l'agente del traffico", en:"the traffic officer"},
+    {it:"gli animali", en:"the animals"},
+  ],
+  sentences:[]
+},
+{
+  id:"signs", title:"I Segnali", sub:"Signs & signals", sign:"triangle", glyph:"▲",
+  desc:"What each family of signs does: warns, prohibits, obliges, or informs.",
+  words:[
+    {it:"il segnale di pericolo", en:"the danger/warning sign"},
+    {it:"il segnale di divieto", en:"the prohibition sign"},
+    {it:"il segnale di obbligo", en:"the mandatory sign"},
+    {it:"dare precedenza", en:"the yield sign"},
+    {it:"il diritto di precedenza", en:"the right of way"},
+    {it:"la segnaletica orizzontale", en:"the road markings"},
+    {it:"il semaforo", en:"the traffic light"},
+    {it:"la luce lampeggiante", en:"the flashing light"},
+    {it:"il pannello integrativo", en:"the supplementary panel"},
+    {it:"il contrassegno", en:"the badge / permit"},
+  ],
+  sentences:[
+    {it:"La fermata è vietata in prossimità dei segnali stradali, <mark>anche se</mark> il veicolo non ne occulta la vista", en:"Stopping is prohibited near road signs, even if the vehicle does not block the view of them", ans:false,
+     why:"The real rule bans stopping only where you would hide the sign. \u201cAnche se\u201d removing the real condition → FALSO."},
+  ]
+},
 ];
 
-const SIGNAL_QS = [
-  {q:'What does "sempre" mean?',opts:['always','never','sometimes','usually'],ans:0,ex:'Absolutes like sempre are red flags — Hack #2.'},
-  {q:'What does "mai" mean?',opts:['always','maybe','never','often'],ans:2,ex:'The absolute negative — Hack #2.'},
-  {q:'What does "vietato" mean?',opts:['allowed','required','forbidden','optional'],ans:2,ex:'"È vietato" statements are usually TRUE — Hack #4.'},
-  {q:'What does "obbligatorio" mean?',opts:['optional','forbidden','recommended','mandatory'],ans:3,ex:'"Non è obbligatorio" + safety rule = FALSO — Hack #1.'},
-  {q:'What does "consentito" mean?',opts:['forbidden','allowed','required','dangerous'],ans:1,ex:'Permission word.'},
-  {q:'What does "purché" mean?',opts:['because','therefore','as long as','except'],ans:2,ex:'Sets a condition that changes the whole sentence.'},
-  {q:'What does "solo" signal in a question?',opts:['a plain fact','definitely true','likely a trap — rule applies more broadly','the rule applies once'],ans:2,ex:'Hack #5: "solo" restrictions are usually false.'},
-  {q:'What does "tranne"/"eccetto" mean?',opts:['also','only','always','except'],ans:3,ex:'Exclusion word.'},
-  {q:'"Non è mai vietato" means…',opts:['always forbidden','never forbidden (= always allowed)','sometimes forbidden','forbidden by default'],ans:1,ex:'Double negative chain: never forbidden = always allowed.'},
-  {q:'"Deve" vs "può"?',opts:['may / must','must (obligation) / can (permission)','forbidden / required','never / always'],ans:1,ex:'deve = must. può = can.'},
-  {q:'What does "occorre"/"bisogna" mean?',opts:['it is forbidden','it happens','it is necessary','it is optional'],ans:2,ex:'Both mean "it is necessary" — very common in the bank (405 occurrences combined).'},
-  {q:'What does "vieta" mean (verb)?',opts:['allows','prohibits','requires','suggests'],ans:1,ex:'"Il segnale vieta…" = the sign prohibits… Appears 203 times.'},
+/* ================================================================
+   STATE + SAFE STORAGE (localStorage works on GitHub Pages; the
+   try/catch keeps the app alive in sandboxed previews)
+================================================================ */
+const KEY="pdg_duo";
+function load(){ try{const r=localStorage.getItem(KEY); if(r) return JSON.parse(r);}catch(e){} return null; }
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} }
+let S = load() || { xp:0, streak:0, lastDay:"", strength:{}, unitLessons:{} };
+
+function wid(u,w){ return u.id+"|"+w.it; }
+function strengthOf(u,w){ return S.strength[wid(u,w)]||0; }
+
+/* ================================================================
+   TIPS ROTATION
+================================================================ */
+const TIPS=[
+  "<b>Golden rule:</b> a trap word (sempre, mai, solo) doesn't guarantee FALSO — it means <i>slow down and check</i>.",
+  "<b>Purché trap:</b> \u201cprovided that\u201d can never legalise a forbidden manoeuvre. \u201cÈ consentito X purché...\u201d about a banned X = FALSO.",
+  "<b>Sosta vs fermata:</b> sosta = you leave the car. Fermata = brief stop, you stay. Divieto di sosta still allows fermata.",
+  "<b>Salvo diversa segnalazione</b> = \u201cunless signs say otherwise\u201d. Rules written this way are usually VERO.",
+  "<b>Negations flip everything.</b> Read \u201cnon\u201d twice. Missing a \u201cnon\u201d is the #1 way to lose a point.",
 ];
+document.getElementById("tip").innerHTML = TIPS[Math.floor(Math.random()*TIPS.length)];
 
-const SIGNS_QS = [
-  {q:'A red triangle sign is a…',opts:['prohibition sign','warning / danger sign','obligation sign','information sign'],ans:1,ex:'Red triangle = pericolo. Hack #8.'},
-  {q:'A red circle sign is a…',opts:['warning sign','information sign','obligation sign','prohibition sign'],ans:3,ex:'Red circle = divieto. Hack #8.'},
-  {q:'A blue circle sign is a…',opts:['information sign','warning sign','obligation sign','prohibition sign'],ans:2,ex:'Blue circle = obbligo. Hack #8.'},
-  {q:'A blue rectangle sign is a…',opts:['warning sign','obligation sign','prohibition sign','information sign'],ans:3,ex:'Blue rectangle = information. Hack #8.'},
-  {q:'A red octagon is a…',opts:['yield sign','danger sign','STOP sign','speed limit'],ans:2,ex:'Must stop completely.'},
-  {q:'Downward white triangle with red border?',opts:['STOP','speed limit','yield / give way','no entry'],ans:2,ex:'Dare la precedenza.'},
-  {q:'Yellow background sign means…',opts:['danger','motorway services','temporary / roadworks','no entry'],ans:2,ex:'Temporary. Overrides permanent signs.'},
-  {q:'"Pannello integrativo" means…',opts:['main sign','supplementary panel under a sign','electronic sign','temporary sign'],ans:1,ex:'The small panel that modifies the main sign. Appears 190 times in the bank!'},
-  {q:'A solid centre line (striscia continua)…',opts:['can be crossed if safe','cannot be crossed','means slow down','marks a bus lane'],ans:1,ex:'Never cross a solid line.'},
-  {q:'"Il segnale raffigurato preannuncia…" means',opts:['the sign shown prohibits','the sign shown warns of / announces','the sign shown requires','the sign shown ends'],ans:1,ex:'preannuncia = announces in advance. Appears 423 times — learn this word!'},
-];
-
-const HACKS_QS = [
-  {q:'"In autostrada è consentita l\'inversione di marcia." VERO o FALSO?',opts:['VERO','FALSO'],ans:1,ex:'Hack #9: U-turns forbidden on motorways.',vf:true},
-  {q:'"I neopatentati possono avere un tasso alcolemico di 0,5 g/L." VERO o FALSO?',opts:['VERO','FALSO'],ans:1,ex:'Hack #6: neopatentati = 0.0 g/L.',vf:true},
-  {q:'"Nella rotatoria i veicoli che entrano hanno la precedenza." VERO o FALSO?',opts:['VERO','FALSO'],ans:1,ex:'Hack #10: inside has priority.',vf:true},
-  {q:'"Il casco è obbligatorio solo in autostrada." VERO o FALSO?',opts:['VERO','FALSO'],ans:1,ex:'Hack #5: "solo" = trap. Helmets required everywhere.',vf:true},
-  {q:'"Il conducente deve dare precedenza ai pedoni sulle strisce." VERO o FALSO?',opts:['VERO','FALSO'],ans:0,ex:'Hack #7: pedestrians at crossings always have priority.',vf:true},
-  {q:'"In caso di nebbia bisogna rallentare e aumentare la distanza." VERO o FALSO?',opts:['VERO','FALSO'],ans:0,ex:'Hack #3: cautious behaviour = VERO.',vf:true},
-  {q:'"È vietato parcheggiare sulle strisce pedonali." VERO o FALSO?',opts:['VERO','FALSO'],ans:0,ex:'Hack #4: "è vietato" statements usually TRUE.',vf:true},
-  {q:'"Non è obbligatorio segnalare prima di sorpassare." VERO o FALSO?',opts:['VERO','FALSO'],ans:1,ex:'Hack #1: "non è obbligatorio" + required safety act = FALSO.',vf:true},
-  {q:'"Si può sempre sorpassare un veicolo in curva." VERO o FALSO?',opts:['VERO','FALSO'],ans:1,ex:'Hack #2: sempre = red flag; overtaking on bends forbidden.',vf:true},
-  {q:'"In autostrada è vietata la retromarcia." VERO o FALSO?',opts:['VERO','FALSO'],ans:0,ex:'Hack #9 + #4: prohibition on motorway = TRUE.',vf:true},
-];
-
-// ─── STATE ───
-function loadSt(){try{return JSON.parse(localStorage.getItem('pat_lng_v3'))||defSt()}catch{return defSt()}}
-function defSt(){return{total:0,correct:0,streak:0,best:0,
-  by:{real:{a:0,c:0},trap:{a:0,c:0},vocab:{a:0,c:0},hacks_q:{a:0,c:0},signal:{a:0,c:0},signs:{a:0,c:0}},
-  leitner:{}, seenReal:{} }}
-function saveSt(){localStorage.setItem('pat_lng_v3',JSON.stringify(ST))}
-let ST=loadSt();
-if(!ST.leitner)ST.leitner={};
-if(!ST.seenReal)ST.seenReal={};
-let quiz={mode:'real',qs:[],idx:0,correct:0,streak:0,best:0,answered:false};
-let cards={deck:[],idx:0,knew:0,missed:0};
-
-// ─── NAV ───
-function showPanel(name,btn){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
-  if(name==='hacks')buildHacks();
-  if(name==='ref')buildRef();
-  if(name==='progress')buildProgress();
-  if(name==='flash')initCards();
+/* ================================================================
+   MAP RENDERING
+================================================================ */
+const $=s=>document.querySelector(s);
+function unitMastery(u){
+  if(!u.words.length) return 0;
+  const max=u.words.length*3;
+  let got=0; u.words.forEach(w=>got+=Math.min(3,strengthOf(u,w)));
+  return got/max;
 }
-
-// ─── QUIZ ───
-let currentMode='real';
-function selMode(el,mode){
-  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');currentMode=mode;
+function renderHeader(){
+  $("#stat-xp").textContent=S.xp;
+  $("#stat-streak").textContent=S.streak;
 }
-
-function highlight(text){
-  return text
-    .replace(/\b(sempre|mai|solo|soltanto|non|vietat[oa]|senza)\b/gi,'<span class="hl-danger">$1</span>')
-    .replace(/\b(purché|salvo|tranne|eccetto|qualora)\b/gi,'<span class="hl-cond">$1</span>');
-}
-
-function pickReal(pool,n){
-  // prefer unseen or previously-wrong questions
-  const scored=pool.map(q=>{
-    const s=ST.seenReal[q.id];
-    let w=1;
-    if(!s)w=3; else if(s==='w')w=5; else w=1;
-    return {q,w};
+function renderMap(){
+  renderHeader();
+  const box=$("#units"); box.innerHTML="";
+  UNITS.forEach((u,i)=>{
+    const m=unitMastery(u);
+    const prevDone = i===0 || (S.unitLessons[UNITS[i-1].id]||0)>=1;
+    const row=document.createElement("div"); row.className="unit-row";
+    const node=document.createElement("button");
+    node.className="unit-node"+(prevDone?"":" locked");
+    node.innerHTML=`
+      <div class="sign ${u.sign}"><span class="glyph">${m>=1?"✓":u.glyph}</span></div>
+      <div class="unit-label">
+        <small>${u.sub}</small>
+        <b>${u.title}</b>
+        <div class="unit-bar"><i style="width:${Math.round(m*100)}%"></i></div>
+      </div>`;
+    node.onclick=()=>openUnit(u);
+    row.appendChild(node); box.appendChild(row);
   });
-  const out=[];const used=new Set();
-  while(out.length<n&&out.length<pool.length){
-    let tot=0;for(const x of scored)if(!used.has(x.q.id))tot+=x.w;
-    let r=Math.random()*tot;
-    for(const x of scored){
-      if(used.has(x.q.id))continue;
-      r-=x.w;
-      if(r<=0){out.push(x.q);used.add(x.q.id);break;}
+}
+
+/* ================================================================
+   UNIT SHEET
+================================================================ */
+function openUnit(u){
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+  const chips=u.words.map(w=>{
+    const s=strengthOf(u,w);
+    const cls=s>=3?"s2":(s>=1?"s1":"s0");
+    return `<span class="chip ${cls}">${w.it} <i>· ${w.en}</i></span>`;
+  }).join("");
+  ov.innerHTML=`<div class="sheet">
+    <div class="sheet-head">
+      <div class="sign ${u.sign}"><span class="glyph">${u.glyph}</span></div>
+      <div><h2>${u.title}</h2><p>${u.desc}</p></div>
+    </div>
+    <div class="word-grid">${chips}</div>
+    <button class="btn btn-blue" id="sheet-start">Start lesson · +2 XP per answer</button>
+    <button class="btn btn-ghost" id="sheet-close">Close</button>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector("#sheet-start").onclick=()=>{ ov.remove(); startLesson(u); };
+  ov.querySelector("#sheet-close").onclick=()=>ov.remove();
+}
+
+/* ================================================================
+   LESSON ENGINE
+================================================================ */
+let L=null; // {unit, queue, total, hearts, correct, wrong, xp}
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+const pick=(a,n)=>shuffle(a).slice(0,n);
+
+function buildExercises(u){
+  // weakest words first
+  const words=[...u.words].sort((a,b)=>strengthOf(u,a)-strengthOf(u,b));
+  const chosen=words.slice(0,7);
+  const ex=[];
+  chosen.forEach((w,i)=>{
+    if(w.cls && Math.random()<0.35){
+      ex.push({t:"classify", w, u});
+    } else if(i%2===0){
+      ex.push({t:"it_en", w, u});
+    } else {
+      ex.push({t:"en_it", w, u});
     }
-  }
-  return out;
-}
-
-function buildVocabQs(){
-  const pool=shuf([...VOCAB_FREQ]).slice(0,10);
-  return pool.map(v=>{
-    const others=shuf(VOCAB_FREQ.filter(x=>x.it!==v.it)).slice(0,3).map(x=>x.en);
-    const opts=shuf([v.en,...others]);
-    return {q:v.it,opts,ans:opts.indexOf(v.en),ex:`"${v.it}" appears ${v.freq} times across the question bank.`,freq:v.freq};
   });
+  // sentence drills: up to 3, pulled from this unit (fall back to trap/safe pool)
+  let pool=u.sentences.length?u.sentences:UNITS[0].sentences.concat(UNITS[1].sentences);
+  pick(pool,Math.min(3,pool.length)).forEach(s=>ex.push({t:"vf", s, u}));
+  return shuffle(ex).slice(0,10);
 }
 
-function startQuiz(){
-  const mode=currentMode;
-  let pool;
-  if(mode==='real')pool=pickReal(REAL_SENT,10).map(q=>({real:q,vf:true}));
-  else if(mode==='trap')pool=pickReal(REAL_TRAP,10).map(q=>({real:q,vf:true}));
-  else if(mode==='vocab')pool=buildVocabQs();
-  else if(mode==='hacks_q')pool=shuf([...HACKS_QS]).slice(0,10);
-  else if(mode==='signal')pool=shuf([...SIGNAL_QS]).slice(0,10);
-  else pool=shuf([...SIGNS_QS]).slice(0,10);
-  quiz={mode,qs:pool,idx:0,correct:0,streak:0,best:0,answered:false};
-  document.getElementById('mode-select').style.display='none';
-  document.getElementById('results-area').style.display='none';
-  document.getElementById('quiz-area').style.display='block';
-  const labels={real:'Real exam questions',trap:'Trap parser',vocab:'Top vocabulary',hacks_q:'Exam hacks',signal:'Signal words',signs:'Sign shapes'};
-  document.getElementById('q-mode-lbl').textContent=labels[mode];
-  showQ();
+function distractors(u,w,field){
+  // options from same unit first, then anywhere
+  let opts=u.words.filter(x=>x!==w).map(x=>x[field]);
+  if(opts.length<3){
+    UNITS.forEach(o=>o.words.forEach(x=>{ if(x!==w) opts.push(x[field]); }));
+  }
+  return pick([...new Set(opts)],3);
 }
 
-function showQ(){
-  const item=quiz.qs[quiz.idx];quiz.answered=false;
-  const tot=quiz.qs.length;
-  document.getElementById('q-ctr').textContent=`Question ${quiz.idx+1} / ${tot}`;
-  document.getElementById('q-prog').style.width=(quiz.idx/tot*100)+'%';
-  document.getElementById('q-fb').className='fb';
-  document.getElementById('next-btn').className='next-btn';
-  document.getElementById('en-reveal').className='en-reveal';
-  document.getElementById('en-reveal').textContent='';
-  const enBtn=document.getElementById('en-btn');
-  enBtn.style.display='none';
-  const opts=document.getElementById('q-opts');
-  opts.innerHTML='';opts.className='opts';
+function startLesson(u){
+  L={unit:u, queue:buildExercises(u), total:0, done:0, hearts:3, correct:0, wrong:0, xp:0};
+  L.total=L.queue.length;
+  $("#screen-map").classList.add("hidden");
+  $("#screen-done").classList.add("hidden");
+  $("#screen-lesson").classList.remove("hidden");
+  window.scrollTo(0,0);
+  nextEx();
+}
+$("#btn-quit").onclick=()=>{ if(confirm("Quit this lesson? Progress in it will be lost.")) showMap(); };
+function showMap(){
+  $("#screen-lesson").classList.add("hidden");
+  $("#screen-done").classList.add("hidden");
+  $("#screen-map").classList.remove("hidden");
+  renderMap();
+}
+function renderHearts(){
+  $("#hearts").innerHTML=[0,1,2].map(i=>`<span class="${i<L.hearts?"":"off"}">❤️</span>`).join("");
+}
+function renderProg(){
+  $("#prog").style.width=Math.round(100*L.done/Math.max(L.total,1))+"%";
+}
 
-  if(item.real){
-    const q=item.real;
-    document.getElementById('q-id').textContent='#'+q.id;
-    document.getElementById('q-badge').textContent=quiz.mode==='trap'?'Trap — parse the logic':'Official exam question';
-    document.getElementById('q-text').innerHTML=highlight(q.it);
-    document.getElementById('q-sub').textContent=quiz.mode==='trap'?'Is this statement VERO or FALSO? Watch the negation chain.':'VERO o FALSO?';
-    enBtn.style.display='inline-block';
-    opts.className='opts vf';
-    ['VERO','FALSO'].forEach((lbl,i)=>{
-      const btn=document.createElement('button');
-      btn.className='opt';
-      btn.textContent=lbl;
-      btn.onclick=()=>checkReal(i===0,btn);
-      opts.appendChild(btn);
+function nextEx(){
+  removeBars();
+  if(!L.queue.length){ finishLesson(); return; }
+  renderHearts(); renderProg();
+  const e=L.queue[0];
+  const area=$("#ex-area");
+  if(e.t==="it_en"){
+    area.innerHTML=`
+      <div class="ex-kind">What does this mean?</div>
+      <div class="prompt-sign">${e.w.it}<small>Italiano</small></div>
+      <div class="opts" id="opts"></div><div class="ex-spacer"></div>`;
+    mountMC(e, shuffle([e.w.en,...distractors(e.u,e.w,"en")]), e.w.en);
+  }
+  else if(e.t==="en_it"){
+    area.innerHTML=`
+      <div class="ex-kind">Pick the Italian</div>
+      <div class="prompt-en">“${e.w.en}”</div>
+      <div class="opts" id="opts"></div><div class="ex-spacer"></div>`;
+    mountMC(e, shuffle([e.w.it,...distractors(e.u,e.w,"it")]), e.w.it);
+  }
+  else if(e.t==="classify"){
+    area.innerHTML=`
+      <div class="ex-kind">Trap word or exception word?</div>
+      <div class="prompt-sign">${e.w.it}<small>${e.w.en}</small></div>
+      <div class="opts duo" id="opts">
+        <button class="opt" data-v="trap">⚠️ TRAPPOLA<span class="sub">absolute — smells like FALSO</span></button>
+        <button class="opt" data-v="safe">🟢 SALVAGENTE<span class="sub">qualifier — often VERO</span></button>
+      </div><div class="ex-spacer"></div>`;
+    mountPick(e, b=>b.dataset.v===e.w.cls,
+      e.w.cls==="trap"
+        ? `“${e.w.it}” is an absolute — when it makes a rule bigger than life, suspect FALSO.`
+        : `“${e.w.it}” adds a condition or exception — the texture of real rules, often VERO.`);
+  }
+  else if(e.t==="vf"){
+    area.innerHTML=`
+      <div class="ex-kind">Real exam pattern — VERO o FALSO?</div>
+      <div class="sentence-card">
+        <div class="lbl">Domanda</div>
+        <div class="it">${e.s.it}</div>
+      </div>
+      <div class="opts duo" id="opts">
+        <button class="opt" data-v="true">VERO</button>
+        <button class="opt" data-v="false">FALSO</button>
+      </div><div class="ex-spacer"></div>`;
+    mountPick(e, b=>(b.dataset.v==="true")===e.s.ans, e.s.why, e.s.en);
+  }
+  window.scrollTo(0,0);
+}
+
+/* multiple-choice with a Check button */
+function mountMC(e, options, right){
+  const box=$("#opts");
+  options.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="opt"; b.textContent=o;
+    b.onclick=()=>{ box.querySelectorAll(".opt").forEach(x=>x.classList.remove("picked")); b.classList.add("picked"); enableCheck(); };
+    box.appendChild(b);
+  });
+  showCheck(()=>{
+    const picked=box.querySelector(".picked");
+    const ok=picked.textContent===right;
+    box.querySelectorAll(".opt").forEach(x=>{
+      if(x.textContent===right)x.classList.add("right");
+      else if(x===picked&&!ok)x.classList.add("wrong");
+      x.disabled=true;
     });
-  } else {
-    document.getElementById('q-id').textContent='';
-    const badges={vocab:'Frequency-ranked word',hacks_q:'Exam hack',signal:'Signal word',signs:'Sign shape'};
-    document.getElementById('q-badge').textContent=badges[quiz.mode]||'—';
-    document.getElementById('q-text').textContent=item.q;
-    document.getElementById('q-sub').textContent='Choose the correct answer:';
-    if(item.vf)opts.className='opts vf';
-    item.opts.forEach((opt,i)=>{
-      const btn=document.createElement('button');
-      btn.className='opt';
-      btn.innerHTML=item.vf?opt:`<span class="ok">${['A','B','C','D'][i]}</span>${opt}`;
-      btn.onclick=()=>checkAns(i,btn);
-      opts.appendChild(btn);
-    });
-  }
-}
-
-function revealEN(){
-  const item=quiz.qs[quiz.idx];
-  if(!item.real)return;
-  const el=document.getElementById('en-reveal');
-  el.textContent=item.real.en;
-  el.className='en-reveal show';
-  item.usedEN=true;
-}
-
-function checkReal(choseVero,btn){
-  if(quiz.answered)return;quiz.answered=true;
-  const q=quiz.qs[quiz.idx].real;
-  const ok=choseVero===q.ans;
-  ST.seenReal[q.id]=ok&&!quiz.qs[quiz.idx].usedEN?'c':'w';
-  record(ok);
-  document.querySelectorAll('.opt').forEach((b,i)=>{
-    b.disabled=true;
-    const isVero=i===0;
-    if(isVero===q.ans)b.classList.add('correct');
-    else if(isVero===choseVero&&!ok)b.classList.add('wrong');
+    grade(e, ok, ok?null:`Correct answer: ${right}`);
   });
-  // always show English after answering
-  const el=document.getElementById('en-reveal');
-  el.textContent=q.en;
-  el.className='en-reveal show';
-  showFb(ok,q.ans?'VERO':'FALSO',quiz.qs[quiz.idx].usedEN?'(Answered with English help — this question will return.)':'');
 }
-
-function checkAns(chosen,btn){
-  if(quiz.answered)return;quiz.answered=true;
-  const q=quiz.qs[quiz.idx];const ok=chosen===q.ans;
-  record(ok);
-  document.querySelectorAll('.opt').forEach((b,i)=>{
-    b.disabled=true;
-    if(i===q.ans)b.classList.add('correct');
-    else if(i===chosen&&!ok)b.classList.add('wrong');
+/* instant two-button pick (classify / VF) */
+function mountPick(e, isRight, why, enText){
+  const box=$("#opts");
+  box.querySelectorAll(".opt").forEach(b=>{
+    b.onclick=()=>{
+      const ok=isRight(b);
+      box.querySelectorAll(".opt").forEach(x=>{
+        if(isRight(x))x.classList.add("right");
+        else if(x===b&&!ok)x.classList.add("wrong");
+        x.disabled=true;
+      });
+      let msg=why||"";
+      if(enText) msg=`<i>${enText}</i><br><br>`+msg;
+      grade(e, ok, msg, true);
+    };
   });
-  showFb(ok,q.opts[q.ans],q.ex);
 }
 
-function record(ok){
-  ST.total++;
-  if(ok){ST.correct++;quiz.correct++;quiz.streak++;ST.streak++;
-    if(quiz.streak>quiz.best)quiz.best=quiz.streak;
-    if(ST.streak>ST.best)ST.best=ST.streak;
-  }else{quiz.streak=0;ST.streak=0;}
-  ST.by[quiz.mode].a++;if(ok)ST.by[quiz.mode].c++;
-  saveSt();updateHdr();
+let checkFn=null;
+function showCheck(fn){
+  removeBars();
+  checkFn=fn;
+  const bar=document.createElement("div");
+  bar.className="check-bar"; bar.id="check-bar";
+  bar.innerHTML=`<button class="btn btn-blue disabled" id="btn-check">CHECK</button>`;
+  document.body.appendChild(bar);
+  $("#btn-check").onclick=()=>{ if(checkFn){const f=checkFn; checkFn=null; f();} };
+}
+function enableCheck(){ const b=$("#btn-check"); if(b)b.classList.remove("disabled"); }
+function removeBars(){
+  const c=document.getElementById("check-bar"); if(c)c.remove();
+  const f=document.getElementById("fb"); if(f)f.remove();
 }
 
-function showFb(ok,correctAns,ex){
-  document.getElementById('fb-lbl').textContent=ok?'✓ Correct!':'✗ Not quite';
-  document.getElementById('fb-det').innerHTML=ok
-    ?`<div style="color:var(--ink2)">${ex||''}</div>`
-    :`<div>Correct answer: <strong>${correctAns}</strong></div><div class="fb-detail">${ex||''}</div>`;
-  document.getElementById('q-fb').className='fb '+(ok?'correct':'wrong')+' show';
-  document.getElementById('next-btn').className='next-btn show';
-}
-
-function nextQ(){quiz.idx++;if(quiz.idx>=quiz.qs.length)showResults();else showQ();}
-
-function showResults(){
-  document.getElementById('quiz-area').style.display='none';
-  document.getElementById('results-area').style.display='block';
-  const pct=Math.round(quiz.correct/quiz.qs.length*100);
-  document.getElementById('r-score').textContent=pct+'%';
-  document.getElementById('r-score').style.color=pct>=90?'var(--green)':pct>=70?'#E65100':'var(--red)';
-  document.getElementById('r-lbl').textContent=pct>=90?'Excellent — exam ready on this topic!':pct>=70?'Good progress — keep drilling':'Review the hacks and try again';
-  document.getElementById('r-c').textContent=quiz.correct;
-  document.getElementById('r-w').textContent=quiz.qs.length-quiz.correct;
-  document.getElementById('r-str').textContent=quiz.best;
-}
-
-function backToModes(){
-  document.getElementById('results-area').style.display='none';
-  document.getElementById('mode-select').style.display='block';
-}
-
-// ─── LEITNER FLASHCARDS ───
-const BOX_INTERVALS=[0,1,2,4,8,16,32]; // sessions between reviews per box
-
-function initCards(){
-  // build due deck from leitner state
-  const now=Date.now();
-  const due=[];const fresh=[];
-  for(const v of VOCAB_FREQ){
-    const l=ST.leitner[v.it];
-    if(!l){fresh.push(v);}
-    else if(now>=l.due){due.push(v);}
+function grade(e, ok, extra, isHTML){
+  const c=document.getElementById("check-bar"); if(c)c.remove();
+  const item=L.queue.shift();
+  if(ok){
+    L.correct++; L.xp+=2; L.done++;
+    if(item.w){ const k=wid(item.u,item.w); S.strength[k]=Math.min(5,(S.strength[k]||0)+1); }
+  }else{
+    L.wrong++; L.hearts=Math.max(0,L.hearts-1);
+    if(item.w){ const k=wid(item.u,item.w); S.strength[k]=Math.max(0,(S.strength[k]||0)-1); }
+    L.queue.push(item); L.total++;      // it comes back
   }
-  // prioritize due, then fresh (by frequency), cap at 20 per session
-  const deck=[...shuf(due),...fresh.sort((a,b)=>b.freq-a.freq)].slice(0,20);
-  cards={deck,idx:0,knew:0,missed:0};
-  buildLeitnerInfo();
-  document.getElementById('fc-wrap').classList.remove('flipped');
-  showCard();
+  renderHearts(); renderProg(); save();
+  const fb=document.createElement("div");
+  fb.className="feedback "+(ok?"ok":"bad"); fb.id="fb";
+  const title= ok? pick(["Esatto!","Bravissimo!","Perfetto!","Giusto!"],1)[0] : "Not quite — it'll come back";
+  const body = extra ? (isHTML?extra:extra) : "";
+  fb.innerHTML=`<div class="inner"><h3>${title}</h3>${body?`<p>${body}</p>`:""}<button class="btn" id="btn-next">CONTINUE</button></div>`;
+  document.body.appendChild(fb);
+  $("#btn-next").onclick=()=>{
+    if(L.hearts===0){ heartsOut(); } else { nextEx(); }
+  };
 }
 
-function buildLeitnerInfo(){
-  const counts=[0,0,0,0,0,0,0];
-  let untracked=0;
-  for(const v of VOCAB_FREQ){
-    const l=ST.leitner[v.it];
-    if(!l)untracked++;else counts[l.box]++;
+function heartsOut(){
+  removeBars();
+  const area=$("#ex-area");
+  area.innerHTML=`
+    <div style="text-align:center;margin-top:60px">
+      <div style="font-size:52px">💔</div>
+      <h2 style="font-family:var(--disp);font-weight:900;font-size:22px;margin-top:14px">Out of hearts</h2>
+      <p style="color:var(--ink-soft);margin-top:8px;font-size:14.5px">No problem — the words you missed are now weaker in the queue, so the next lesson will drill exactly those.</p>
+      <button class="btn btn-blue" style="max-width:300px;margin:26px auto 0" onclick="showMap()">Back to the road</button>
+    </div>`;
+}
+
+function today(){ const d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+function yesterday(){ const d=new Date(Date.now()-864e5); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+
+function finishLesson(){
+  removeBars();
+  const t=today();
+  if(S.lastDay!==t){
+    S.streak = (S.lastDay===yesterday()) ? S.streak+1 : 1;
+    S.lastDay=t;
   }
-  document.getElementById('leitner-info').innerHTML=
-    `<span class="lbox">new <strong>${untracked}</strong></span>`+
-    counts.map((c,i)=>`<span class="lbox">box ${i} <strong>${c}</strong></span>`).join('');
+  const bonus=10; S.xp+=L.xp+bonus;
+  S.unitLessons[L.unit.id]=(S.unitLessons[L.unit.id]||0)+1;
+  save();
+  const acc=L.correct+L.wrong===0?100:Math.round(100*L.correct/(L.correct+L.wrong));
+  $("#screen-lesson").classList.add("hidden");
+  $("#screen-done").classList.remove("hidden");
+  $("#done-msg").textContent = acc===100 ? "Percorso netto — no mistakes!" :
+    acc>=70 ? "Solid run. Missed words will come back stronger." :
+    "Tough one — those words are now first in line next lesson.";
+  $("#done-xp").textContent="+"+(L.xp+bonus);
+  $("#done-acc").textContent=acc+"%";
+  $("#done-streak").textContent=S.streak;
+  renderHeader();
+  window.scrollTo(0,0);
 }
+$("#btn-continue").onclick=showMap;
 
-function showCard(){
-  if(cards.idx>=cards.deck.length){
-    document.getElementById('fc-ctr').textContent='Session complete! Come back later for due reviews.';
-    document.getElementById('fc-front').textContent='🎉';
-    document.getElementById('fc-freq').textContent='';
-    document.getElementById('fc-back').textContent='Done';
-    document.getElementById('fc-box').textContent='';
-    document.getElementById('fc-stats').textContent=`Knew: ${cards.knew}  |  Missed: ${cards.missed}`;
-    return;
-  }
-  const c=cards.deck[cards.idx];
-  document.getElementById('fc-wrap').classList.remove('flipped');
-  document.getElementById('fc-front').textContent=c.it;
-  document.getElementById('fc-freq').textContent=`appears ${c.freq}× in the exam bank`;
-  document.getElementById('fc-back').textContent=c.en;
-  const l=ST.leitner[c.it];
-  document.getElementById('fc-box').textContent=l?`Leitner box ${l.box}`:'New word';
-  document.getElementById('fc-ctr').textContent=`Card ${cards.idx+1} of ${cards.deck.length}`;
-  document.getElementById('fc-stats').textContent=`Knew: ${cards.knew}  |  Missed: ${cards.missed}`;
-}
-
-function flipCard(){document.getElementById('fc-wrap').classList.toggle('flipped')}
-
-function cardRes(knew){
-  if(cards.idx>=cards.deck.length)return;
-  if(!document.getElementById('fc-wrap').classList.contains('flipped')){flipCard();return;}
-  const c=cards.deck[cards.idx];
-  const l=ST.leitner[c.it]||{box:0,due:0};
-  if(knew){cards.knew++;l.box=Math.min(6,l.box+1);}
-  else{cards.missed++;l.box=0;}
-  const hours=BOX_INTERVALS[l.box]*3600*1000*6; // box1≈6h, box2≈12h, box4≈24h...
-  l.due=Date.now()+Math.max(hours, knew?21600000:600000); // missed → 10 min
-  ST.leitner[c.it]=l;saveSt();
-  cards.idx++;showCard();buildLeitnerInfo();
-}
-
-// ─── HACKS / REF / PROGRESS ───
-function buildHacks(){
-  const vm={f:'→ usually FALSO',v:'→ usually VERO',both:'→ context dependent'};
-  const cm={f:'verdict-f',v:'verdict-v',both:'verdict-both'};
-  document.getElementById('hacks-list').innerHTML=HACKS.map(h=>`
-    <div class="hack-card"><div class="hack-num">${h.num}</div>
-    <div class="hack-body"><div class="hack-title">${h.title}</div>
-    <div class="hack-desc">${h.desc}</div><div class="hack-ex">${h.ex}</div>
-    <span class="hack-verdict ${cm[h.verdict]}">${vm[h.verdict]}</span></div></div>`).join('');
-}
-
-function buildRef(){
-  document.getElementById('ref-vocab').innerHTML=VOCAB_FREQ.map(v=>`
-    <div class="ref-item"><span class="ref-it">${v.it}</span>
-    <span style="display:flex;align-items:center;gap:8px"><span class="ref-en">${v.en}</span>
-    <span class="ref-freq">${v.freq}×</span></span></div>`).join('');
-}
-
-function buildProgress(){
-  const pct=ST.total?Math.round(ST.correct/ST.total*100):0;
-  const realSeen=Object.keys(ST.seenReal).length;
-  document.getElementById('prog-ov').innerHTML=`
-    <div class="pcard"><div class="v">${ST.total}</div><div class="l">questions answered</div></div>
-    <div class="pcard"><div class="v" style="color:var(--green)">${pct}%</div><div class="l">overall accuracy</div></div>
-    <div class="pcard"><div class="v">${ST.best}</div><div class="l">best streak</div></div>
-    <div class="pcard"><div class="v">${realSeen}</div><div class="l">real questions seen</div></div>`;
-  const cats=[{k:'real',l:'Real exam'},{k:'trap',l:'Trap parser'},{k:'vocab',l:'Vocabulary'},{k:'hacks_q',l:'Exam hacks'},{k:'signal',l:'Signal words'},{k:'signs',l:'Sign shapes'}];
-  document.getElementById('cat-bars').innerHTML=cats.map(c=>{
-    const d=ST.by[c.k];const p=d.a?Math.round(d.c/d.a*100):0;
-    return `<div class="catrow"><div class="catname">${c.l}</div><div class="catbar"><div class="catfill" style="width:${p}%"></div></div><div class="catpct">${d.a?p+'%':'—'}</div></div>`;
-  }).join('');
-}
-
-function resetProg(){
-  if(confirm('Reset all progress?')){localStorage.removeItem('pat_lng_v3');ST=defSt();updateHdr();buildProgress();}
-}
-
-function updateHdr(){
-  document.getElementById('hdr-streak').textContent=ST.streak;
-  document.getElementById('hdr-total').textContent=ST.total;
-  document.getElementById('hdr-score').textContent=ST.total?Math.round(ST.correct/ST.total*100)+'%':'—';
-}
-
-function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-
-updateHdr();
+renderMap();
 </script>
 </body>
 </html>
